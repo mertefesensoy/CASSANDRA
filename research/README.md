@@ -57,6 +57,8 @@ Explores verifier-guided synthetic traces, external memory injection, and the me
     *   *Relevance:* Stage 41 (Why forced-choice readout metrics cannot rescue true circuit failures, and how surface form competition differs from structural generalization collapse).
 11. **[Induction Heads and Zero-Shot Copy Failure](theme_2_in_context_learning_and_rag/11_induction_heads_and_zero_shot_failure.md)**
     *   *Relevance:* Stage 55 (Why the 200M flagship model fails at zero-shot copying despite strong broad NLL).
+12. **[Forgetting of Structural Circuits and In-Context Learning](theme_2_in_context_learning_and_rag/12_forgetting_of_structural_circuits.md)**
+    *   *Relevance:* Stage 55 (Why the 200M flagship model fails at zero-shot copying despite strong broad NLL).
 
 ## Theme 3: Training Dynamics & Curriculums
 
@@ -81,6 +83,8 @@ Explores how ordering data affects small-model learning, catastrophic forgetting
 17. **[Data Mixing Laws and DoReMi](theme_3_training_dynamics_and_curriculums/17_data_mixing_laws_and_doremi.md)**
     *   *Relevance:* Stage 58 (How proxy models can mathematically optimize data mixtures over manual heuristics).
 18. **[Catastrophic Forgetting and Replay Buffers](theme_3_training_dynamics_and_curriculums/18_catastrophic_forgetting_and_replay_buffers.md)**
+    *   *Relevance:* Phase 6 Prep (How hard curriculum shifts cause forgetting and how continual mixing preserves base grammar).
+19. **[Scale Breakdown in Proxy Data Mixing](theme_3_training_dynamics_and_curriculums/19_scale_breakdown_in_proxy_mixing.md)**
     *   *Relevance:* Phase 6 Prep (How hard curriculum shifts cause forgetting and how continual mixing preserves base grammar).
 
 ## Theme 4: Domain Specialization and Substrates

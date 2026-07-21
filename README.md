@@ -622,14 +622,31 @@ Latest local numbers are recorded in
     `d <= +0.010` broad toll with `r >= 1.0` retention gain. See
     `docs/hypotheses/025-rehearsal-dose-response-and-mixing-law.md` and
     `docs/phase6-codex-goal-prompt.md`.
-70. Phase 6.1 dual-register flagship (Stage 60) · GATED on rung 69 reading
-    E-cheap-rehearsal (ADR 0017 D2); does not launch otherwise. A 200M-class
-    Recipe v2 model in the Stage 55 configuration lineage trains on one
-    continuous mixture at the validated dose, budget set by a sustained
-    throughput measure inside a 30 to 40 GPU-hour envelope (50,000-step
-    ceiling). Publish-worthiness bars are pre-registered in ADR 0017 D4
-    (beat `1.357318` text8 TEST, retention at least `1.0` bits/char better
-    than the `3.556502` no-rehearsal anchor, letters probe recorded, sample
-    review); Hugging Face packaging is prepared by Codex, every public
-    button is the user's. See
-    `docs/decisions/0017-phase-6-rehearsal-dose-flagship-gate.md`.
+70. Phase 6.1 dual-register flagship · the ADR 0017 D2 gate did NOT fire:
+    rung 69 resolved E-partial (seed 11 CONFIRM-side at `+0.009654`, seed
+    19 a sub-noise `+0.012353` miss of the confirm line; retention gains
+    `+2.70`/`+2.67` bits/char; transfer read NOT_DECISION_GRADE at a
+    `2.094x` over-prediction), so this flagship design never launched and
+    the gate is spent. Part 0 separately FIRED the behavior-axis reopen:
+    the broad-only 85M scored `0.194336` on the letters probe against the
+    narrow-only 201.6M flagship's `0.060547` on the identical probe. See
+    `docs/decisions/0017-phase-6-rehearsal-dose-flagship-gate.md`
+    (implementation status) and `runs/stage59_verdict.json`.
+71. Phase 6 redesign centerpiece (H026, Stage 60) · eval-only circuit
+    mapping: probe every surviving Stage 58/59 checkpoint (68 verified,
+    including the TinyStories-only CURRICULUM phase-1 ladders) with the
+    frozen letters probe; PRESENT at or above `0.1625`, ABSENT at or
+    below `0.1125`; E-diverse if narrow-only rows stay ABSENT while
+    broad-bearing lineages cross PRESENT, E-steps if any narrow-only row
+    reads PRESENT, E-gray otherwise; formation-onset and destruction
+    screening reads pre-registered. See
+    `docs/hypotheses/026-diverse-data-circuit-formation.md` and
+    `docs/decisions/0018-phase-6-redesign-circuit-mapping-and-instrumented-flagship.md`.
+72. Pure-broad instrumented flagship (Stage 61) · a 200M-class Recipe v2
+    model on pure text8 (no mixture, capacity claim only), every
+    5,000-step checkpoint probed and retention-scored as it lands (the
+    200M formation curve for free), budget from a sustained throughput
+    measure inside the 30 to 40 GPU-hour envelope, publish bars in
+    ADR 0018 D5 (beat `1.357318`, instrumentation complete, sample
+    review; margin printed next to the `0.003035` spread). Hugging Face
+    packaging prepared by Codex; every public button is the user's.

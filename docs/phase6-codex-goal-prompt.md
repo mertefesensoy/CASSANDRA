@@ -129,7 +129,49 @@ do not branch on it.
    naming which decision line fired, run files cited per number. Claude
    reads the verdict back before anything Stage 60 happens.
 
-## Stage 60 · The Phase 6.1 flagship (rung 70) · GATED, DO NOT START EARLY
+## REDESIGN NOTICE (2026-07-22) · read this before the sections below
+
+Stage 59 resolved E-partial and the ADR 0017 D2 gate is SPENT: the
+mixture flagship section below never launches and stays only as the
+historical record. The redesigned Phase 6 execution order is now:
+
+1. **Stage 60 = H026 eval-only circuit mapping** (rung 71). Authority:
+   `docs/hypotheses/026-diverse-data-circuit-formation.md`. Probe every
+   surviving Stage 58/59 checkpoint with the frozen letters probe at
+   Part 0 defaults through the new committed wrapper
+   `make_stage60_circuit_matrix.py` (H025-Part-0 probe tool computes no
+   hashes itself): one row per checkpoint with checkpoint and probe
+   SHA-256, consolidated into `runs/stage60_circuit_matrix.jsonl` and
+   `.md`. Trains NOTHING; about one GPU-hour total. Hash rule per H026:
+   verify where a recorded hash exists, exclude-and-flag mismatches,
+   mark `hash_unverified` where no record exists. First row is the
+   determinism check: re-probe the COLD seed-7 final and require exact
+   reproduction of `0.194336` before trusting any other row. Record
+   missing or incompatible rows with reasons.
+2. **Stage 61 = pure-broad instrumented 200M flagship** (rung 72).
+   Authority: ADR 0018 D3 to D5. Reuse the gate sequence written for the
+   old Stage 60 below (sizing gate, sustained 5,000-step throughput
+   measure, resume drill, launch protocol, evaluation battery, packaging)
+   with these substitutions: the corpus is PURE text8 broad shards (no
+   mixture build, no dose rule, `w_flag` machinery void); checkpoint
+   retention is `--checkpoint-keep 12` or higher (keep-all for the run;
+   the old section's `--checkpoint-keep 2` is OVERRIDDEN because it
+   would erase the instrumentation ladder), and EVERY 5,000-step
+   checkpoint survives until its probe and retention rows are recorded
+   in `runs/stage61_instrumentation.jsonl` (intermediates deletable only
+   after that, finals never); the letters
+   probe and the TinyStories retention eval run per checkpoint within a
+   day of it landing; the publish bars are ADR 0018 D5, not ADR 0017 D4
+   (no retention bar; the (a) text8 line `1.357318` and the sample-review
+   gate stand).
+3. Stage 61 may launch before Stage 60's verdict is read (it is
+   measurement either way), but no packaging step proceeds before both
+   the Stage 60 read-back and the D5 bars.
+
+Everything in "Ground rules for the whole phase" still binds, including
+the MUSAHIT night rule and the stop-and-ask triggers.
+
+## Stage 60 · The Phase 6.1 flagship (rung 70) · SUPERSEDED 2026-07-22, GATE SPENT, DO NOT RUN
 
 Launches ONLY on H025 = E-cheap-rehearsal (ADR 0017 D2). If any other
 line fired, stop after Stage 59 and hand back to Claude for the
