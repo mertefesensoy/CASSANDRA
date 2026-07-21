@@ -39,6 +39,15 @@ $Part2MixDir = Join-Path $CorpusDir "stage59_mix_w010_85m"
 $UnionVocab = Join-Path $CorpusDir "phase5_union_vocab.txt"
 $Part2CheckpointDir = "C:\cassandra_runs\stage59_mixture_w10_checkpoints"
 $Seed7ColdCheckpointDir = "C:\cassandra_runs\stage59_seed7_cold_checkpoints"
+$DesktopRoot = Split-Path -Parent $RepoRoot
+$MusahitNightlyCandidates = @(Get-ChildItem -LiteralPath $DesktopRoot -Directory | ForEach-Object {
+    Join-Path $_.FullName "scripts/scheduling/run_nightly.ps1"
+} | Where-Object { Test-Path -LiteralPath $_ })
+if ($MusahitNightlyCandidates.Count -ne 1) {
+    throw "Expected exactly one sibling MUSAHIT nightly launcher, found $($MusahitNightlyCandidates.Count)"
+}
+$MusahitNightly = $MusahitNightlyCandidates[0]
+$MusahitSkipFlag = Join-Path (Split-Path -Parent $MusahitNightly) "SKIP_NEXT_RUN.flag"
 $Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $RunLog = Join-Path $RunDir ("phase6_{0}_{1}.log" -f $Mode, $Timestamp)
 $LauncherLog = Join-Path $RunDir ("phase6_{0}_{1}_launcher.log" -f $Mode, $Timestamp)
@@ -127,18 +136,71 @@ function Invoke-MixtureBuild {
 }
 
 function Assert-Stage59FitGate {
+    $Sweep = Join-Path $RunDir "stage59_proxy_sweep.jsonl"
     $FitOut = Join-Path $RunDir "stage59_mixing_law_fit.json"
-    if (-not (Test-Path -LiteralPath $FitOut)) {
-        throw "The frozen Stage 59 fit artifact must exist before any Part 2 action: $FitOut"
+    $FitSummary = Join-Path $RunDir "stage59_mixing_law_fit.md"
+    foreach ($Path in @($Sweep, $FitOut, $FitSummary)) {
+        if (-not (Test-Path -LiteralPath $Path)) {
+            throw "The complete frozen Stage 59 sweep and fit artifacts must exist before any Part 2 action: $Path"
+        }
+        if ((Get-Item -LiteralPath $Path).Length -le 0) {
+            throw "Stage 59 launch-gate artifact is empty: $Path"
+        }
     }
     $Fit = Get-Content -Raw -LiteralPath $FitOut | ConvertFrom-Json
-    if ([string]::IsNullOrWhiteSpace([string]$Fit.primary.kind)) {
-        throw "Stage 59 fit artifact has no registered primary family"
+    if ([int]$Fit.rows -ne 18 -or [int]$Fit.parameters -ne 3176481 -or [int]$Fit.steps_per_run -ne 5000) {
+        throw "Stage 59 fit artifact does not describe the registered 18-run, 3,176,481-parameter, 5,000-step sweep"
     }
-    if ($null -eq $Fit.predictions.predicted_85m_cost_at_w010.delta_bits_per_char -or $null -eq $Fit.predictions.w_star.dose) {
-        throw "Stage 59 fit artifact is missing the two pre-registered Part 2 predictions"
+    $ExpectedDoses = @(0.00, 0.05, 0.10, 0.20, 0.30, 0.50)
+    $ExpectedSeeds = @(7, 11, 19)
+    if ((@($Fit.expected_doses) -join ",") -ne ($ExpectedDoses -join ",") -or
+        (@($Fit.expected_seeds) -join ",") -ne ($ExpectedSeeds -join ",")) {
+        throw "Stage 59 fit artifact does not carry the registered dose and seed grid"
     }
-    Write-LauncherLog "[gate] fit_frozen=$FitOut created_utc=$($Fit.created_utc) primary=$($Fit.primary.kind) predicted_w010_cost_bits=$($Fit.predictions.predicted_85m_cost_at_w010.delta_bits_per_char) predicted_w_star=$($Fit.predictions.w_star.dose)"
+    if ([string]$Fit.primary.kind -notin @("exponential", "power")) {
+        throw "Stage 59 fit artifact has no valid registered primary family"
+    }
+    foreach ($Kind in @("exponential", "power")) {
+        $Family = $Fit.fits.$Kind
+        if ($null -eq $Family -or @($Family.residual_table).Count -ne 6) {
+            throw "Stage 59 fit artifact is missing the complete $Kind fit and residual table"
+        }
+        foreach ($Metric in @($Family.rmse, $Family.leave_one_out.rmse)) {
+            $Value = [double]$Metric
+            if ([double]::IsNaN($Value) -or [double]::IsInfinity($Value)) {
+                throw "Stage 59 $Kind fit contains a non-finite residual metric"
+            }
+        }
+    }
+    $Cost = $Fit.predictions.predicted_85m_cost_at_w010
+    $WStar = $Fit.predictions.w_star
+    foreach ($Metric in @($Cost.delta_nll, $Cost.delta_bits_per_char, $WStar.dose, $WStar.predicted_broad_cost_delta_bits)) {
+        if ($null -eq $Metric) {
+            throw "Stage 59 fit artifact is missing one of the two pre-registered Part 2 predictions"
+        }
+        $Value = [double]$Metric
+        if ([double]::IsNaN($Value) -or [double]::IsInfinity($Value)) {
+            throw "Stage 59 fit artifact contains a non-finite pre-registered prediction"
+        }
+    }
+    if ([double]$WStar.dose -lt 0.0 -or [double]$WStar.dose -gt 0.5) {
+        throw "Stage 59 fit artifact predicts w* outside the registered sweep range"
+    }
+    if ([IO.Path]::GetFullPath([string]$Fit.input) -ne [IO.Path]::GetFullPath($Sweep)) {
+        throw "Stage 59 fit artifact points at the wrong sweep input"
+    }
+    $SweepSha256 = (Get-FileHash -LiteralPath $Sweep -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ([string]$Fit.input_sha256 -ne $SweepSha256) {
+        throw "Stage 59 fit artifact is not frozen to the current sweep SHA-256"
+    }
+    $SummaryText = Get-Content -Raw -LiteralPath $FitSummary
+    foreach ($Needle in @("Pre-registered Predictions Before Part 2", "predicted 85M broad cost", "predicted w")) {
+        if (-not $SummaryText.Replace([string][char]96, "").Contains($Needle)) {
+            throw "Stage 59 fit summary is missing required prediction text: $Needle"
+        }
+    }
+    $FitSha256 = (Get-FileHash -LiteralPath $FitOut -Algorithm SHA256).Hash.ToLowerInvariant()
+    Write-LauncherLog "[gate] fit_frozen=$FitOut fit_sha256=$FitSha256 sweep_sha256=$SweepSha256 created_utc=$($Fit.created_utc) primary=$($Fit.primary.kind) predicted_w010_cost_bits=$($Cost.delta_bits_per_char) predicted_w_star=$($WStar.dose)"
 }
 
 function Assert-Seed7EscalationGate {
@@ -173,17 +235,126 @@ function Assert-Part2Mixture {
         throw "Missing the dedicated Stage 59 Part 2 w=0.10 corpus or metadata. Build it only after the fit gate."
     }
     $Meta = Get-Content -Raw -LiteralPath $MetaPath | ConvertFrom-Json
+    $ExpectedChars = 90112000L
     $RequiredChars = 20000L * 4096L
-    if ([math]::Abs([double]$Meta.tiny_fraction - 0.10) -gt 1e-12) {
-        throw "Part 2 mixture metadata is not the registered w=0.10 dose"
+    $ExpectedTinyChars = 9011200L
+    $ExpectedBroadChars = 81100800L
+    if ($ExpectedChars -ne [math]::Ceiling($RequiredChars * 1.10)) {
+        throw "Internal Part 2 corpus headroom registration is inconsistent"
     }
-    if ([int64]$Meta.written_chars -lt $RequiredChars) {
-        throw "Part 2 mixture has $($Meta.written_chars) chars but a 20,000-step arm consumes $RequiredChars"
+    if ([int64]$Meta.requested_total_chars -ne $ExpectedChars -or [int64]$Meta.written_chars -ne $ExpectedChars) {
+        throw "Part 2 mixture is not the registered 90,112,000-character corpus"
+    }
+    if ([int64]$Meta.written_tiny_chars -ne $ExpectedTinyChars -or
+        [int64]$Meta.written_broad_chars -ne $ExpectedBroadChars) {
+        throw "Part 2 mixture has incorrect TinyStories or broad character counts"
+    }
+    if ([string]$Meta.ratio -ne "1:9" -or [math]::Abs([double]$Meta.tiny_fraction - 0.10) -gt 1e-12) {
+        throw "Part 2 mixture metadata is not the registered w=0.10 dose"
     }
     if ([int]$Meta.tiny_reader_wraps -ne 0 -or [int]$Meta.broad_reader_wraps -ne 0) {
         throw "Part 2 mixture metadata records source wrapping"
     }
-    Write-LauncherLog "[gate] part2_mixture=$Part2MixDir chars=$($Meta.written_chars) ratio=$($Meta.ratio) sha256=$($Meta.sha256)"
+    if ([IO.Path]::GetFullPath([string]$Meta.tiny_source.dir) -ne [IO.Path]::GetFullPath($TinyShardDir) -or
+        [IO.Path]::GetFullPath([string]$Meta.broad_source.dir) -ne [IO.Path]::GetFullPath($BroadShardDir)) {
+        throw "Part 2 mixture metadata points at the wrong source corpus"
+    }
+    $ActualSha256 = Get-ConcatenatedShardSha256 -ShardDir $Part2MixDir
+    if ([string]$Meta.sha256 -ne $ActualSha256) {
+        throw "Part 2 mixture shard content does not match its metadata SHA-256"
+    }
+    Write-LauncherLog "[gate] part2_mixture=$Part2MixDir chars=$($Meta.written_chars) tiny_chars=$($Meta.written_tiny_chars) broad_chars=$($Meta.written_broad_chars) ratio=$($Meta.ratio) no_wrap=true sha256=$ActualSha256"
+}
+
+function Assert-85MTrainingRow {
+    param(
+        [object]$Row,
+        [int]$ExpectedSeed,
+        [string]$ExpectedTrainShardDir,
+        [string]$Label
+    )
+    $Expected = [ordered]@{
+        comparison_name = "random_full"
+        seed = $ExpectedSeed
+        steps = 20000
+        formation_steps = 20000
+        formation_forward_passes = 40000
+        formation_parameters = 85106721
+        training_target_steps = 20000
+        planned_training_steps = 20000
+        parameters = 85106721
+        trainable_parameters = 85106721
+        frozen_prior_parameters = 0
+        n_layer = 12
+        n_head = 12
+        n_embd = 768
+        block_size = 256
+        batch_size = 8
+        grad_accum_steps = 2
+        effective_batch_size = 16
+        pos_encoding = "rope"
+        activation_checkpoint = $true
+        dropout = 0.0
+        precision = "fp32"
+        optimizer = "muon"
+        lr_schedule = "cosine"
+        lr_final_frac = 0.1
+        lr_total_steps = 20000
+        lr_last_factor = 0.1
+        vocab_size = 33
+        vocab_chars_override = $true
+        train_scope = "all"
+        eval_mode = "sampled"
+        eval_batches = 16
+        retention_eval_mode = "sampled"
+        retention_eval_batches = 16
+        checkpoint_every = 5000
+        checkpoint_keep = 0
+        copy_train_marker = ""
+    }
+    $Mismatches = @()
+    foreach ($Name in $Expected.Keys) {
+        if ($Row.$Name -ne $Expected[$Name]) {
+            $Mismatches += "$Name expected=$($Expected[$Name]) observed=$($Row.$Name)"
+        }
+    }
+    if ($Mismatches.Count -gt 0) {
+        throw "$Label training surface mismatch: $($Mismatches -join '; ')"
+    }
+    if ([IO.Path]::GetFullPath([string]$Row.corpus) -ne [IO.Path]::GetFullPath($Text8Corpus) -or
+        [IO.Path]::GetFullPath([string]$Row.train_shard_dir) -ne [IO.Path]::GetFullPath($ExpectedTrainShardDir) -or
+        [IO.Path]::GetFullPath([string]$Row.retention_eval_corpus) -ne [IO.Path]::GetFullPath($RetentionCorpus)) {
+        throw "$Label training row points at the wrong corpus lineage"
+    }
+    if ([int]$Row.retention_eval_seed -ne $ExpectedSeed + 59000) {
+        throw "$Label auxiliary retention evaluation seed is not registered"
+    }
+    foreach ($Metric in @($Row.val_nll, $Row.val_bits_per_char, $Row.retention_val_nll, $Row.retention_val_bits_per_char)) {
+        if ($null -eq $Metric) {
+            throw "$Label training row is missing a monitoring metric"
+        }
+        $Value = [double]$Metric
+        if ([double]::IsNaN($Value) -or [double]::IsInfinity($Value)) {
+            throw "$Label training row contains a non-finite monitoring metric"
+        }
+    }
+    if ([math]::Abs([double]$Row.val_bits_per_char - [double]$Row.val_nll / [math]::Log(2.0)) -gt 3e-6 -or
+        [math]::Abs([double]$Row.retention_val_bits_per_char - [double]$Row.retention_val_nll / [math]::Log(2.0)) -gt 3e-6) {
+        throw "$Label training row has inconsistent NLL and bits/char conversions"
+    }
+    $Curve = @($Row.loss_curve)
+    foreach ($Step in @(5000, 10000, 15000, 20000)) {
+        $Matches = @($Curve | Where-Object { [int]$_.step -eq $Step })
+        if ($Matches.Count -ne 1) {
+            throw "$Label sampled loss curve must contain exactly one step-$Step record"
+        }
+        foreach ($Metric in @($Matches[0].train_nll, $Matches[0].val_nll)) {
+            $Value = [double]$Metric
+            if ([double]::IsNaN($Value) -or [double]::IsInfinity($Value)) {
+                throw "$Label sampled loss curve contains a non-finite value at step $Step"
+            }
+        }
+    }
 }
 
 function Assert-CheckpointWriteReady {
@@ -223,6 +394,181 @@ if not final.exists() or final.stat().st_size <= 0:
             Remove-Item -LiteralPath $ProbeFinal -Force -ErrorAction SilentlyContinue
         }
     }
+}
+function Assert-MusahitSkipReady {
+    if (-not (Test-Path -LiteralPath $MusahitNightly)) {
+        throw "Missing MUSAHIT nightly launcher: $MusahitNightly"
+    }
+    $Source = Get-Content -Raw -LiteralPath $MusahitNightly
+    $RequiredGuardLines = @(
+        'Join-Path $PSScriptRoot "SKIP_NEXT_RUN.flag"',
+        'if (Test-Path $SkipFlag)',
+        'Remove-Item $SkipFlag -Force',
+        'exit 0'
+    )
+    foreach ($Needle in $RequiredGuardLines) {
+        if (-not $Source.Contains($Needle)) {
+            throw "MUSAHIT one-shot skip guard changed or is missing: $Needle"
+        }
+    }
+    if (-not (Test-Path -LiteralPath $MusahitSkipFlag)) {
+        throw "MUSAHIT one-shot skip flag is absent: $MusahitSkipFlag"
+    }
+    Write-LauncherLog "[gate] musahit_guard_verified=true skip_flag_ready=$MusahitSkipFlag"
+}
+
+function Assert-GpuIdleForLaunch {
+    $Rows = @(& nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv,noheader,nounits 2>$null |
+        Where-Object { $_.Trim() -ne "" })
+    if ($LASTEXITCODE -ne 0) {
+        throw "nvidia-smi compute-process preflight failed"
+    }
+    if ($Rows.Count -gt 0) {
+        throw "GPU compute process already active; refusing concurrent launch: $($Rows -join ' | ')"
+    }
+    Write-LauncherLog "[gate] gpu_compute_processes=0"
+}
+
+function Assert-MusahitWindowReady {
+    param(
+        [double]$ExpectedHours,
+        [string]$Label
+    )
+    $Now = Get-Date
+    $NextFiring = $Now.Date.AddHours(2)
+    if ($Now -ge $NextFiring) {
+        $NextFiring = $NextFiring.AddDays(1)
+    }
+    $EstimatedFinish = $Now.AddHours($ExpectedHours)
+    if ($EstimatedFinish -ge $NextFiring) {
+        Assert-MusahitSkipReady
+        Write-LauncherLog "[gate] musahit_collision=$true label=$Label expected_hours=$ExpectedHours estimated_finish=$($EstimatedFinish.ToString('o')) next_firing=$($NextFiring.ToString('o'))"
+    }
+    else {
+        Write-LauncherLog "[gate] musahit_collision=$false label=$Label expected_hours=$ExpectedHours estimated_finish=$($EstimatedFinish.ToString('o')) next_firing=$($NextFiring.ToString('o'))"
+    }
+}
+
+function Get-ConcatenatedShardSha256 {
+    param([string]$ShardDir)
+    $Files = @(Get-ChildItem -LiteralPath $ShardDir -File -Filter "train_*.txt" | Sort-Object Name)
+    if ($Files.Count -eq 0) {
+        throw "No train shards found while verifying $ShardDir"
+    }
+    $Hasher = [Security.Cryptography.SHA256]::Create()
+    try {
+        $Utf8 = [Text.UTF8Encoding]::new($false)
+        foreach ($File in $Files) {
+            # Path.write_text() translates newlines on Windows after the generator
+            # hashes each UTF-8 text piece. Normalize exactly as Python read_text()
+            # so this re-verifies the generator's semantic content hash.
+            $Text = [IO.File]::ReadAllText($File.FullName, $Utf8)
+            $NormalizedText = $Text.Replace("`r`n", "`n").Replace("`r", "`n")
+            $Bytes = $Utf8.GetBytes($NormalizedText)
+            $null = $Hasher.TransformBlock($Bytes, 0, $Bytes.Length, $null, 0)
+        }
+        $null = $Hasher.TransformFinalBlock([byte[]]::new(0), 0, 0)
+        return [Convert]::ToHexString($Hasher.Hash).ToLowerInvariant()
+    }
+    finally {
+        $Hasher.Dispose()
+    }
+}
+
+function Assert-ProxyMixtureInputs {
+    $ExpectedChars = 22528000L
+    $RequiredChars = 5000L * 4096L
+    $Expected = @(
+        [PSCustomObject]@{ Label = "w005"; Dose = 0.05; Tiny = 1126400L; Broad = 21401600L; Ratio = "1:19"; Sha256 = "d8d2b1ced7095e968ca4354464d32e8e857b377226591c6254b07f6f5bc66381" },
+        [PSCustomObject]@{ Label = "w010"; Dose = 0.10; Tiny = 2252800L; Broad = 20275200L; Ratio = "1:9"; Sha256 = "7055b42dc55828ffe519adb9b356453b656f4a202b029d330155b8d8b5b9153d" },
+        [PSCustomObject]@{ Label = "w020"; Dose = 0.20; Tiny = 4505600L; Broad = 18022400L; Ratio = "1:4"; Sha256 = "95f61408306bd8e6d0b89fd19a5b5930263bb08f60dc872acfa9699280714d93" },
+        [PSCustomObject]@{ Label = "w030"; Dose = 0.30; Tiny = 6758400L; Broad = 15769600L; Ratio = "3:7"; Sha256 = "fa88ab9b16bb6562868e78c2d1aa1413fc5736e155867e7114e353cadca2bc4a" },
+        [PSCustomObject]@{ Label = "w050"; Dose = 0.50; Tiny = 11264000L; Broad = 11264000L; Ratio = "1:1"; Sha256 = "e92e83e4ce1292f4bf8fe897bf7c5d64b52988fa18bcca25421c16bd960eb04a" }
+    )
+    if ($ExpectedChars -le $RequiredChars) {
+        throw "Registered proxy corpora lack headroom over the 20,480,000 chars consumed per run"
+    }
+    foreach ($Item in $Expected) {
+        $ShardDir = Join-Path $CorpusDir ("stage59_mix_{0}" -f $Item.Label)
+        $MetaPath = Join-Path $CorpusDir ("stage59_mix_{0}.meta.json" -f $Item.Label)
+        foreach ($Path in @($ShardDir, $MetaPath)) {
+            if (-not (Test-Path -LiteralPath $Path)) {
+                throw "Missing registered Stage 59 mixture input: $Path"
+            }
+        }
+        $Meta = Get-Content -Raw -LiteralPath $MetaPath | ConvertFrom-Json
+        if ([int64]$Meta.requested_total_chars -ne $ExpectedChars -or [int64]$Meta.written_chars -ne $ExpectedChars) {
+            throw "$($Item.Label) does not contain the registered $ExpectedChars chars"
+        }
+        if ([int64]$Meta.written_tiny_chars -ne $Item.Tiny -or [int64]$Meta.written_broad_chars -ne $Item.Broad) {
+            throw "$($Item.Label) has incorrect tiny/broad character counts"
+        }
+        if ([string]$Meta.ratio -ne $Item.Ratio -or [math]::Abs([double]$Meta.tiny_fraction - $Item.Dose) -gt 1e-12) {
+            throw "$($Item.Label) has incorrect ratio or dose metadata"
+        }
+        if ([int]$Meta.tiny_reader_wraps -ne 0 -or [int]$Meta.broad_reader_wraps -ne 0) {
+            throw "$($Item.Label) records a wrapped source reader"
+        }
+        if ([IO.Path]::GetFullPath([string]$Meta.tiny_source.dir) -ne [IO.Path]::GetFullPath($TinyShardDir) -or
+            [IO.Path]::GetFullPath([string]$Meta.broad_source.dir) -ne [IO.Path]::GetFullPath($BroadShardDir)) {
+            throw "$($Item.Label) metadata points at the wrong source corpus"
+        }
+        if ([string]$Meta.sha256 -ne $Item.Sha256) {
+            throw "$($Item.Label) metadata SHA-256 differs from the frozen value"
+        }
+        $ActualSha256 = Get-ConcatenatedShardSha256 -ShardDir $ShardDir
+        if ($ActualSha256 -ne $Item.Sha256) {
+            throw "$($Item.Label) shard content SHA-256 differs from the frozen value"
+        }
+        Write-LauncherLog "[gate] proxy_mixture=$($Item.Label) dose=$($Item.Dose) ratio=$($Item.Ratio) chars=$ExpectedChars no_wrap=true sha256=$ActualSha256"
+    }
+}
+
+function Assert-ProxySweepProgress {
+    param(
+        [string]$OutPath,
+        [double[]]$CompletedDoses
+    )
+    $Rows = @(Get-Content -LiteralPath $OutPath | Where-Object { $_.Trim() -ne "" } |
+        ForEach-Object { $_ | ConvertFrom-Json })
+    $ExpectedCount = $CompletedDoses.Count * 3
+    if ($Rows.Count -ne $ExpectedCount) {
+        throw "Proxy sweep progress has $($Rows.Count) rows, expected $ExpectedCount after $($CompletedDoses.Count) doses"
+    }
+    $ErrorRows = @($Rows | Where-Object { $_.status -eq "error" })
+    if ($ErrorRows.Count -gt 0) {
+        $First = $ErrorRows[0]
+        throw "Proxy sweep preserved an error row for dose=$($First.mixture_dose) seed=$($First.seed): $($First.error)"
+    }
+    $ExpectedKeys = @{}
+    foreach ($Dose in $CompletedDoses) {
+        foreach ($ExpectedSeed in @(7, 11, 19)) {
+            $ExpectedKeys[("{0:F2}|{1}" -f $Dose, $ExpectedSeed)] = $true
+        }
+    }
+    $ObservedKeys = @{}
+    foreach ($Row in $Rows) {
+        $Key = "{0:F2}|{1}" -f [double]$Row.mixture_dose, [int]$Row.seed
+        if ($ObservedKeys.ContainsKey($Key)) {
+            throw "Proxy sweep progress contains duplicate dose/seed key $Key"
+        }
+        $ObservedKeys[$Key] = $true
+        if (-not $ExpectedKeys.ContainsKey($Key)) {
+            throw "Proxy sweep progress contains unexpected dose/seed key $Key"
+        }
+        if ($Row.comparison_name -ne "stage59_proxy_random_full" -or
+            [int]$Row.steps -ne 5000 -or [int64]$Row.parameters -ne 3176481 -or
+            $Row.eval_mode -ne "sampled" -or [int]$Row.eval_batches -ne 16 -or
+            $Row.retention_eval_mode -ne "sampled" -or [int]$Row.retention_eval_batches -ne 16) {
+            throw "Proxy sweep progress contains a row outside the registered config, budget, or evaluation surface at $Key"
+        }
+    }
+    foreach ($Key in $ExpectedKeys.Keys) {
+        if (-not $ObservedKeys.ContainsKey($Key)) {
+            throw "Proxy sweep progress is missing dose/seed key $Key"
+        }
+    }
+    Write-LauncherLog "[verified] proxy_sweep_rows=$($Rows.Count) completed_doses=$($CompletedDoses -join ',') status=clean"
 }
 "[visible] launcher_start=$(Get-Date -Format o)" | Set-Content -LiteralPath $LauncherLog
 Write-LauncherLog "[visible] repo=$RepoRoot"
@@ -291,14 +637,19 @@ elseif ($Mode -eq "stage59-build-mixtures") {
     }
 }
 elseif ($Mode -eq "stage59-proxy-sweep") {
-    if ($Budget -le 0) {
-        throw "-Budget must be positive"
+    if ($Budget -ne 5000) {
+        throw "The registered Stage 59 proxy sweep budget is exactly 5,000 steps per run"
     }
     $Out = Join-Path $RunDir "stage59_proxy_sweep.jsonl"
     $Summary = Join-Path $RunDir "stage59_proxy_sweep.md"
     if ((Test-Path -LiteralPath $Out) -or (Test-Path -LiteralPath $Summary)) {
         throw "Refusing to overwrite existing Stage 59 proxy sweep artifacts. Preserve them and use suffixed recovery artifacts."
     }
+    Assert-GpuIdleForLaunch
+    Assert-MusahitSkipReady
+    Assert-ProxyMixtureInputs
+    Write-LauncherLog "[registered] conservative_smoke_seconds_per_step=0.31"
+    Write-LauncherLog "[registered] conservative_training_hours=7.75 plus_per_run_eval_overhead=true"
     $Doses = @(
         [PSCustomObject]@{ Dose = 0.00; Dir = $BroadShardDir },
         [PSCustomObject]@{ Dose = 0.05; Dir = (Join-Path $CorpusDir "stage59_mix_w005") },
@@ -342,6 +693,8 @@ elseif ($Mode -eq "stage59-proxy-sweep") {
             $RunArgs += "--append"
         }
         Invoke-VisiblePython -Label ("stage59_proxy_dose_{0}" -f $DoseText) -RunArgs $RunArgs
+        $CompletedDoses = @($Doses[0..$Index] | ForEach-Object { [double]$_.Dose })
+        Assert-ProxySweepProgress -OutPath $Out -CompletedDoses $CompletedDoses
     }
 }
 elseif ($Mode -eq "stage59-fit") {
@@ -361,15 +714,17 @@ elseif ($Mode -eq "stage59-fit") {
         "--summary", $FitSummary
     )
     Invoke-VisiblePython -Label "stage59_mixing_law_fit" -RunArgs $RunArgs
+    Assert-Stage59FitGate
 }
 elseif ($Mode -eq "stage59-build-w10-85m") {
     Assert-Stage59FitGate
-    if ($TotalChars -le 0) {
-        throw "-TotalChars must be positive and include Part 2 headroom"
+    if ($TotalChars -ne 90112000) {
+        throw "The registered Part 2 corpus is exactly 90,112,000 characters, including 10 percent headroom"
     }
     $OutDir = Join-Path $CorpusDir "stage59_mix_w010_85m"
     $MetaPath = Join-Path $CorpusDir "stage59_mix_w010_85m.meta.json"
     Invoke-MixtureBuild -Label "stage59_mix_w010_85m" -TinyWeight 1 -BroadWeight 9 -Chars $TotalChars -OutDir $OutDir -MetaPath $MetaPath
+    Assert-Part2Mixture
 }
 elseif ($Mode -eq "stage59-indicative-eval") {
     Assert-Stage59FitGate
@@ -465,6 +820,8 @@ elseif ($Mode -eq "stage59-part2-arm") {
         }
         Write-LauncherLog "[gate] resume_from=$ResumeFrom"
     }
+    Assert-GpuIdleForLaunch
+    Assert-MusahitWindowReady -ExpectedHours 6.5 -Label ("stage59_part2_mixture_seed{0}" -f $Seed)
     Assert-CheckpointWriteReady -CheckpointDir $Part2CheckpointDir
     $RunArgs = @(
         ".\experiments\tiny_language_lab\cassandra_compare.py",
@@ -515,12 +872,8 @@ elseif ($Mode -eq "stage59-part2-arm") {
         throw "Part 2 seed $Seed output must contain exactly one decision row"
     }
     $Row = $Rows[0]
-    if ([int]$Row.seed -ne $Seed -or [int]$Row.steps -ne 20000 -or [int64]$Row.parameters -ne 85106721) {
-        throw "Part 2 seed $Seed row failed the seed/step/parameter verification"
-    }
-    if ($Row.eval_mode -ne "sampled" -or [int]$Row.eval_batches -ne 16) {
-        throw "Part 2 seed $Seed row failed the sampled monitoring convention verification"
-    }
+    Assert-85MTrainingRow -Row $Row -ExpectedSeed $Seed -ExpectedTrainShardDir $Part2MixDir -Label ("Part 2 MIXTURE seed {0}" -f $Seed)
+
     Write-LauncherLog "[verified] part2_seed=$Seed parameters=$($Row.parameters) final_sampled_broad_nll=$($Row.val_nll) final_sampled_broad_bits=$($Row.val_bits_per_char)"
 }
 elseif ($Mode -eq "stage59-part2-eval") {
@@ -603,6 +956,8 @@ elseif ($Mode -eq "stage59-seed7-cold-arm") {
         }
         Write-LauncherLog "[gate] resume_from=$ResumeFrom"
     }
+    Assert-GpuIdleForLaunch
+    Assert-MusahitWindowReady -ExpectedHours 6.5 -Label "stage59_seed7_cold"
     Assert-CheckpointWriteReady -CheckpointDir $Seed7ColdCheckpointDir
     $RunArgs = @(
         ".\experiments\tiny_language_lab\cassandra_compare.py",
@@ -653,12 +1008,8 @@ elseif ($Mode -eq "stage59-seed7-cold-arm") {
         throw "Seed-7 COLD output must contain exactly one decision row"
     }
     $Row = $Rows[0]
-    if ([int]$Row.seed -ne 7 -or [int]$Row.steps -ne 20000 -or [int64]$Row.parameters -ne 85106721) {
-        throw "Seed-7 COLD row failed the seed/step/parameter verification"
-    }
-    if ($Row.eval_mode -ne "sampled" -or [int]$Row.eval_batches -ne 16) {
-        throw "Seed-7 COLD row failed the sampled monitoring convention verification"
-    }
+    Assert-85MTrainingRow -Row $Row -ExpectedSeed 7 -ExpectedTrainShardDir $BroadShardDir -Label "Seed-7 COLD"
+
     Write-LauncherLog "[verified] escalation_arm=cold seed=7 parameters=$($Row.parameters) final_sampled_broad_nll=$($Row.val_nll) final_sampled_broad_bits=$($Row.val_bits_per_char)"
 }
 elseif ($Mode -eq "stage59-seed7-cold-eval") {

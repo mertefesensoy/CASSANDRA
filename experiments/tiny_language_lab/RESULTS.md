@@ -6110,13 +6110,15 @@ and training bits/char are not applicable.
 | Probe NLL | 2.774850 |
 | Evaluation wall time | 14.83 seconds |
 
-Registered comparison: **`0.194336 >= 0.162500`**. Claude owns the
-`REOPEN_BEHAVIOR_AXIS` read; Codex records the row without issuing that verdict.
-The row shows that the broad-trained COLD checkpoint carries above-threshold
-zero-shot signal on this constrained letters-copy probe. It does not establish
-coherent copying, learned induction heads, or a general behavior capability.
-Per H025 and ADR 0017, Codex did not branch on this result, and it does not
-gate, alter, or delay Parts 1 and 2. Raw evidence is in
+Registered comparison: **`0.194336 >= 0.162500`**. Claude's 2026-07-21
+read-back records **`REOPEN_BEHAVIOR_AXIS` FIRED** and reopens the behavior axis
+as the H026 intake candidate on diverse-data circuit formation. The row shows
+that the broad-trained COLD checkpoint carries above-threshold zero-shot signal
+on this constrained letters-copy probe. It does not establish coherent copying,
+learned induction heads, or a general behavior capability. The H026 intake
+should first replicate the same probe on the remaining Stage 58 finals. Per
+H025 and ADR 0017 D2, this read-back does not gate, alter, or delay Parts 1 and
+2, and it does not change the Stage 60 gate. Raw evidence is in
 `runs/stage59_cold_letters_probe.json`, its companion Markdown summary, and
 `runs/phase6_stage59-part0_20260721_104856_launcher.log`.
 
@@ -6192,3 +6194,285 @@ through `run_phase6_visible.ps1 -Mode stage59-proxy-sweep -Budget 5000`. Evidenc
 `runs/stage59_proxy_throughput_smoke.jsonl`, its Markdown summary,
 `runs/phase6_stage59-proxy-smoke_20260721_110836_launcher.log`, and
 `runs/phase6_stage59-build-mixtures_20260721_111032_launcher.log`.
+
+Claude's operational read-back uses the conservative full-smoke rate of about
+`0.31` seconds/step: `18 x 5,000` steps price at about `7.8` training hours,
+before per-run evaluation overhead. This can cross MUSAHIT's 02:00 firing. On
+2026-07-21 Codex re-read MUSAHIT's one-shot guard in
+`MÜŞAHİT/scripts/scheduling/run_nightly.ps1`, confirmed that it consumes an
+adjacent `SKIP_NEXT_RUN.flag` and exits, then created that zero-byte flag for
+tonight's firing. The sweep launcher must reverify both the guard and flag
+immediately before launch.
+
+The final launcher preflight also pins the sweep budget to exactly `5,000`
+steps and re-verifies all five mixture metadata records and complete shard
+content against the frozen ratios, character counts, source directories,
+zero-wrap status, and SHA-256 values above. The fit output now records the
+exact sweep JSONL SHA-256. Every Part 2 mode requires the nonempty JSON and
+Markdown fit artifacts, both functional families and their residual tables,
+the exact 18-row grid, finite values for both predictions, and a live hash
+match to that sweep. A synthetic 18-row end-to-end fit passed this gate, and
+the gate rejected a sweep mutated after fitting. These are launch-safety
+checks, not proxy results.
+
+## Stage 59 Part 1 Proxy Sweep and Frozen Mixing-Law Fit
+
+Date: 2026-07-21 local
+
+The user explicitly authorized the registered 18-run sweep before the normal
+18:00 window. The visible launcher began at 13:04 local after confirming an
+idle GPU, `193.96 GiB` free on `C:`, the adjacent MUSAHIT one-shot skip flag,
+the nightly guard, the exact `5,000`-step budget, and all five mixture hashes.
+Every dose process exited code `0`. The launcher validated the accumulated grid
+after each three-row dose and ended at 15:25 local with status `success`.
+
+The completed sweep contains exactly `18` rows: doses
+`0.00, 0.05, 0.10, 0.20, 0.30, 0.50` crossed with seeds `7, 11, 19`. Every row
+uses `stage59_proxy_random_full`, `3,176,481` trainable parameters, block `256`,
+batch `8`, gradient accumulation `2`, RoPE, activation checkpointing, fp32,
+Muon, cosine decay, and exactly `5,000` steps. Independent validation found no
+error rows, no missing or duplicate cells, `72` finite decision metrics, and
+all `36` NLL-to-bits conversions consistent within six-decimal serialization
+rounding. The frozen sweep JSONL SHA-256 is
+`1fbaeca0988c94cfd4f5edea1d298346ad5ebfb461f93e01c60def630d1cf1a7`.
+
+| Dose | Broad val NLL mean | Broad bits/char mean | TinyStories retention NLL mean | Retention bits/char mean |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.00 | 1.164046 | 1.679364 | 2.703804 | 3.900766 |
+| 0.05 | 1.182765 | 1.706368 | 1.061704 | 1.531715 |
+| 0.10 | 1.181865 | 1.705070 | 0.980572 | 1.414666 |
+| 0.20 | 1.195972 | 1.725424 | 0.910768 | 1.313960 |
+| 0.30 | 1.203465 | 1.736233 | 0.853517 | 1.231365 |
+| 0.50 | 1.233464 | 1.779512 | 0.795121 | 1.147117 |
+
+Only after the exact sweep gate passed, the visible fit launcher froze both
+registered families and their residual tables. The power family is primary by
+the registered lower leave-one-dose-out RMSE rule: power LODO RMSE `0.011122`
+versus exponential `0.012942`. In-sample RMSE is `0.003808` for power and
+`0.003990` for exponential; their R-squared values are `0.969151` and
+`0.966130`, respectively.
+
+The pre-Part-2 predictions are now immutable evidence:
+
+- Direct-transfer predicted 85M broad-loss cost at `w = 0.10`:
+  **`0.023045 bits/char`** (`0.015973` NLL).
+- Fitted rehearsal dose `w*`: **`0.045800`**.
+- Predicted broad-loss toll at `w*`: **`0.011773 bits/char`**.
+- Provisional Part 1 retention bound: **`1.731365 bits/char`**.
+
+The fit JSON records the sweep SHA above and has SHA-256
+`265977f17c71c224512b841151ebd12578bec5fe62394d83da050a1504300c97`.
+Strict post-fit verification confirmed both families, all 12 in-sample and 12
+leave-one-dose-out residual rows, finite predictions, the input-hash binding,
+and matching Markdown values. The direct 85M transfer remains descriptive
+until Part 2 measures it, and six dose means do not identify a universal law.
+
+Durable evidence is in `runs/stage59_proxy_sweep.jsonl`, its Markdown summary,
+`runs/stage59_mixing_law_fit.json`, its Markdown summary, and the corresponding
+`phase6_stage59-proxy-sweep_20260721_130403_launcher.log` and
+`phase6_stage59-fit_20260721_152757_launcher.log`. Per the falsifiability gate,
+no Part 2 corpus, baseline, or 85M arm has launched. Execution is stopped for
+the required fit-file and sweep-summary read-back.
+
+## Stage 59 Part 2 Registered Pre-Arm Evidence
+
+Date: 2026-07-21 local
+
+After the required Part 1 read-back, the visible launcher built the registered
+`w = 0.10` 85M mixture. Its ten train shards contain exactly `90,112,000`
+characters: `9,011,200` TinyStories characters and `81,100,800` text8
+characters in the exact `1:9` ratio. Neither source reader wrapped. The
+registered corpus-content SHA-256 is
+`20a5764ace8987b3f5972b29aee1c9cbbe2756c9e7194aa29f9c7fcf34644232`.
+The frozen-fit gate was checked before the build and remains a launch gate for
+every Part 2 mode.
+
+H025's indicative pre-step evaluated the paired Stage 58 seed-7 step-20,000
+checkpoints from their 42,000-step cosine runs on the deterministic text8 TEST
+split. The mixture checkpoint at dose `0.298` scored `1.523708 bits/char`; the
+COLD checkpoint scored `1.485039 bits/char`. The paired toll was therefore
+`+0.038670 bits/char`, which is `+0.010693` above the registered `+0.027977`
+anchor, about 38 percent higher. This discrepancy was recorded before either
+85M decision arm. As registered, the reading is mid-cosine and indicative
+only; it feeds no H025 decision line.
+
+The paired COLD TinyStories retention baselines were then evaluated with
+non-overlapping 256-character windows and context resets, using exactly
+`1,499,904` characters per checkpoint:
+
+| Seed | COLD retention bits/char | Windows |
+| ---: | ---: | ---: |
+| 11 | 3.713197 | 5,859 |
+| 19 | 3.681775 | 5,859 |
+
+Both evaluation launchers exited successfully. Immediately before the first
+arm's window, the preflight found `192.38 GiB` free on `C:`, an idle GPU, no
+existing seed-11 decision artifacts, an empty Part 2 checkpoint namespace,
+the zero-byte MUSAHIT skip flag, and the intact nightly consume-and-exit
+guard. The user then explicitly authorized an early seed-11 launch.
+
+Evidence is in `corpus/stage59_mix_w010_85m.meta.json`,
+`runs/stage59_indicative_w298_step20000_text8_test.json`,
+`runs/stage59_indicative_cold_step20000_text8_test.json`,
+`runs/stage59_cold_b20000_retention_baselines.json`, and their companion
+Markdown summaries and visible-launcher logs.
+
+## Stage 59 Part 2 Seed 11 Arm and Deterministic Evaluation
+
+Date: 2026-07-21 local
+
+With the user's explicit early-launch authorization, the visible seed-11 arm
+began at 16:07 local and ended at 19:12 with status `success`. Independent
+post-run validation found exactly one decision row in
+`runs/stage59_mixture_w10_85m_b20000_seed11.jsonl`. It matches the H025 Recipe
+v2 surface: `85,106,721` total and trainable parameters, 12 layers, 12 heads,
+embedding 768, block 256, batch 8, gradient accumulation 2, RoPE, activation
+checkpointing, fp32, Muon, cosine decay to 0.1, and exactly 20,000 steps and
+40,000 formation forward passes. All registered training and monitoring
+metrics are finite, and both stored NLL-to-bits conversions are consistent.
+
+| Registered training quantity | Value |
+| --- | ---: |
+| Final sampled broad NLL | 0.956320 |
+| Final sampled broad bits/char | 1.379678 |
+| Step-10,000 sampled broad NLL | 1.034565 |
+| Final improvement versus step 10,000 | 0.078245 NLL |
+| Final sampled TinyStories bits/char | 0.993332 |
+
+The final sampled broad NLL therefore passes H025's instability guard. The
+exact checkpoint ladder is present and nonempty under
+`C:\cassandra_runs\stage59_mixture_w10_checkpoints`:
+
+- `stage59_mixture_w10_85m_b20000_seed11_random_full_seed11.pt`
+- `stage59_mixture_w10_85m_b20000_seed11_random_full_seed11_step005000.pt`
+- `stage59_mixture_w10_85m_b20000_seed11_random_full_seed11_step010000.pt`
+- `stage59_mixture_w10_85m_b20000_seed11_random_full_seed11_step015000.pt`
+- `stage59_mixture_w10_85m_b20000_seed11_random_full_seed11_step020000.pt`
+
+The visible deterministic evaluation began at 19:26 and ended at 19:32 with
+status `success`. The final checkpoint's text8 TEST result is `1.419808332`
+bits/char (`0.984136143` NLL) over exactly `4,999,936` characters in `19,531`
+non-overlapping 256-character windows with context resets. The stored
+conversion is exact at the evaluation precision. Against the registered
+same-seed COLD anchor `1.410153859`, seed 11 has
+`d = +0.009654474` bits/char.
+
+TinyStories retention was evaluated over exactly `1,499,904` characters in
+`5,859` non-overlapping 256-character windows for the final checkpoint and
+all four step checkpoints. Every NLL-to-bits conversion is exact at the
+evaluation precision.
+
+| Checkpoint step | TinyStories bits/char |
+| ---: | ---: |
+| 5,000 | 1.331754288 |
+| 10,000 | 1.173845614 |
+| 15,000 | 1.065414512 |
+| 20,000 final | 1.009657926 |
+| 20,000 checkpoint rung | 1.009657926 |
+
+Against the seed-11 COLD retention baseline `3.713196912`, the final retention
+gain is `r = +2.703538987` bits/char. Seed 11 is therefore individually
+CONFIRM-side under H025: `d <= +0.010` and `r >= 1.0`. This is an interim
+paired result only. No seed-19 arm, Stage 59 verdict, or Stage 60 action has
+launched.
+
+Durable evidence: `runs/stage59_mixture_w10_85m_b20000_seed11.jsonl`, its
+Markdown summary, `runs/stage59_mixture_w10_85m_b20000_seed11_text8_test.json`,
+`runs/stage59_mixture_w10_85m_b20000_seed11_retention.json`, and visible logs
+`runs/phase6_stage59-part2-arm_20260721_160752_launcher.log` and
+`runs/phase6_stage59-part2-eval_20260721_192611_launcher.log`.
+## Stage 59 Part 2 Seed 19 Arm and Deterministic Evaluation
+
+Date: 2026-07-21 local
+
+The first visible seed-19 invocation at 20:36 omitted the required
+`-Budget 20000` launcher argument. Its own gate stopped before Python,
+checkpoint, or decision-row creation. The preflight-only launcher and
+keep-awake logs are preserved. The corrected visible invocation at 20:39
+included the registered budget and passed the fit, corpus, idle-GPU,
+checkpoint-write, and MUSAHIT-skip gates.
+
+The corrected arm ended at 23:28 with status `success`. It produced exactly
+one H025 Recipe v2 decision row: `85,106,721` total and trainable parameters,
+12 layers, 12 heads, embedding 768, block 256, batch 8, gradient accumulation
+2, RoPE, activation checkpointing, fp32, Muon, cosine decay to 0.1, and
+20,000 steps with 40,000 formation forward passes. All registered training
+metrics are finite and NLL-to-bits conversions are consistent.
+
+| Registered training quantity | Value |
+| --- | ---: |
+| Final sampled broad NLL | 0.928695 |
+| Final sampled broad bits/char | 1.339824 |
+| Step-10,000 sampled broad NLL | 1.060035 |
+| Final improvement versus step 10,000 | 0.131340 NLL |
+| Final sampled TinyStories bits/char | 0.997534 |
+
+The final sampled broad NLL passes H025's instability guard. The unsuffixed
+final checkpoint and all 5,000-step rungs are present and nonempty under
+`C:\cassandra_runs\stage59_mixture_w10_checkpoints` for the exact prefix
+`stage59_mixture_w10_85m_b20000_seed19_random_full_seed19`.
+
+The visible deterministic evaluation ended at 23:44 with status `success`.
+Its final text8 TEST result is `1.423132148` bits/char (`0.986440036` NLL)
+over exactly `4,999,936` characters in `19,531` non-overlapping
+256-character windows with context resets. The final TinyStories retention is
+`1.012726995` bits/char over exactly `1,499,904` characters in `5,859`
+non-overlapping 256-character windows. The final plus 5k, 10k, 15k, and 20k
+checkpoint-rung retention values are `1.012726995`, `1.335022539`,
+`1.175283648`, `1.068275801`, and `1.012726995` bits/char respectively.
+All deterministic evaluation metrics are finite and each stored NLL-to-bits
+conversion is exact at evaluation precision.
+
+Against the registered seed-19 COLD anchors, `d = +0.012352734` bits/char
+(`1.423132148 - 1.410779414`) and `r = +2.669047761` bits/char
+(`3.681774756 - 1.012726995`). Seed 19 is neither CONFIRM-side nor KILL-side:
+its retention clears `1.0`, but its broad-text toll is above `+0.010` and
+below `+0.020`. The paired H025 partition is applied only after this input is
+combined with seed 11 by the registered verdict tool.
+
+Durable evidence: `runs/stage59_mixture_w10_85m_b20000_seed19.jsonl`, its
+Markdown summary, `runs/stage59_mixture_w10_85m_b20000_seed19_text8_test.json`,
+`runs/stage59_mixture_w10_85m_b20000_seed19_retention.json`, and visible logs
+`runs/phase6_stage59-part2-arm_20260721_203630_launcher.log`,
+`runs/phase6_stage59-part2-arm_20260721_203904_launcher.log`, and
+`runs/phase6_stage59-part2-eval_20260721_233804_launcher.log`.
+## Stage 59 H025 Paired Deterministic Verdict
+
+Date: 2026-07-21 local
+
+After both Part 2 arms and deterministic evaluation ladders independently
+validated, the visible registered verdict tool wrote
+`runs/stage59_verdict.json` and `runs/stage59_verdict.md`. Independent
+recomputation from the paired COLD and MIXTURE source artifacts reproduced
+both seed deltas, both retention gains, the mean cost, the frozen-fit
+prediction, classifications, and the H025 precedence result.
+
+| Seed | d, MIXTURE minus COLD text8 bits/char | r, retention gain bits/char | Class |
+| ---: | ---: | ---: | --- |
+| 11 | +0.009654474 | +2.703538987 | CONFIRM-side |
+| 19 | +0.012352734 | +2.669047761 | neither |
+
+Both arms pass their registered instability guards: seed 11 final sampled
+broad NLL `0.956320` is lower than its step-10,000 value `1.034565`; seed 19
+final `0.928695` is lower than `1.060035`. The mean deterministic broad-text
+cost is `+0.011003604` bits/char.
+
+H025's verdict is **E-partial (GRADED)**. The INCONCLUSIVE precedence branch
+does not apply because neither seed is KILL-side. E-cheap fails because seed
+19's `d` exceeds `+0.010`; E-costly fails because both costs remain below
+`+0.020`. The registered seed-7 escalation is therefore not authorized.
+
+The secondary transfer read is **NOT_DECISION_GRADE**. The frozen proxy fit
+predicted a `+0.023044712` bits/char 85M cost at `w = 0.10`, versus the
+measured mean `+0.011003604`: ratio `2.094288`, outside the registered
+factor-of-two band and on the wrong side of the E-costly line. This descriptive
+read does not alter the primary verdict.
+
+The Stage 60 data gate is false. No Stage 60 sizing, throughput, corpus,
+resume drill, training, packaging, or public action has launched. Per ADR 0017
+D2, Phase 6 returns to intake carrying the measured dose-response evidence;
+the required Claude read-back is a closeout handoff, not permission to scale.
+
+Durable evidence: `runs/stage59_verdict.json`, `runs/stage59_verdict.md`, and
+`runs/phase6_stage59-verdict_20260721_235446_launcher.log`, with all paired
+Part 2 training and deterministic evaluation sources cited inside the verdict.

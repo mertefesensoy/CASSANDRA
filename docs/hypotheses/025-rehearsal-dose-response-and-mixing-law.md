@@ -1,13 +1,27 @@
 # Hypothesis 025 · A small rehearsal dose keeps the TinyStories register nearly free, or it does not: Stage 58's single 29.8 percent dose point, the replay literature's 5 to 10 percent practice, and a flat-toll alternative make competing predictions, and a proxy-fitted mixing law must publish its 85M prediction before the confirmation arms are paid for
 
-- Status: OPEN. Specced for Codex as Stage 59 (README ladder rung 69).
-  Audited 2026-07-21 (hypothesis-auditor pass; all eight required fixes
-  applied: closed verdict partition with stated precedence, cross-budget
-  anchor disclosure, registered escalation and retention baselines, command
-  shapes, provisional Part 1 bound, pinned guard step, risk section).
-  Pre-registered decision lines below; step counts inherit Recipe v2 and
-  the measured throughput anchor, with a confirm-first smoke before any
-  full arm.
+- Status: RESOLVED, E-PARTIAL (GRADED), 2026-07-22 read-back of the
+  2026-07-21 Stage 59 run. Seed 11 was CONFIRM-side (`d = +0.009654`,
+  `r = +2.703539`); seed 19 fell in the graded band (`d = +0.012353`,
+  `r = +2.669048`, neither side); no KILL-side seed existed, so the
+  escalation rule did not apply and the partition reads E-partial. Both
+  instability guards passed. Disclosed nuance: seed 19 missed the CONFIRM
+  line by `0.002353`, below the known `0.003035` between-seed spread; the
+  pre-registered line stands regardless. The secondary transfer read is
+  NOT_DECISION_GRADE: the frozen power-law fit predicted `0.023045`
+  bits/char at `w = 0.10` versus measured mean `0.011004` (ratio `2.094`,
+  outside factor two, wrong side of the `0.020` line), so proxy-predicted
+  data decisions stay out of the toolkit. Part 0 separately FIRED the
+  behavior-axis reopen (`0.194336` versus line `0.1625`, ADR 0016
+  clause 3). Registered consequence: the dose-response curve bent but not
+  enough to act on; ADR 0017 D2's Stage 60 gate does NOT fire. Evidence:
+  `runs/stage59_verdict.json`, `runs/stage59_mixture_w10_85m_b20000_seed1{1,9}_text8_test.json`,
+  `runs/stage59_mixture_w10_85m_b20000_seed1{1,9}_retention.json`,
+  `runs/stage59_cold_b20000_retention_baselines.json`,
+  `runs/stage59_mixing_law_fit.json`. (Original pre-registration follows,
+  frozen: audited 2026-07-21, eight auditor fixes applied; decision lines
+  below; step counts inherited Recipe v2 and the measured throughput
+  anchor with a confirm-first smoke.)
 - Date: 2026-07-21
 - Author: Claude (hypothesis and roadmap role)
 - Ladder rung: 69 (Codex stage number 59)

@@ -39,6 +39,32 @@ def read_single_jsonl(path: Path) -> dict[str, Any]:
     return row
 
 
+def validate_deterministic_result(result: object, expected_chars: int, path: Path) -> None:
+    if not isinstance(result, dict):
+        raise ValueError(f"Missing deterministic result object: {path}")
+    expected_block = 256
+    expected_windows, remainder = divmod(expected_chars, expected_block)
+    if remainder:
+        raise AssertionError("Registered deterministic character count is not block-aligned")
+    expected = {
+        "chars_evaluated": expected_chars,
+        "block_size": expected_block,
+        "windows": expected_windows,
+    }
+    mismatches = {
+        key: {"expected": value, "observed": result.get(key)}
+        for key, value in expected.items()
+        if result.get(key) != value
+    }
+    if mismatches:
+        raise ValueError(f"Deterministic evaluation shape mismatch in {path}: {mismatches}")
+    nll = float(result.get("nll", math.nan))
+    bits = float(result.get("bits_per_char", math.nan))
+    if not math.isfinite(nll) or not math.isfinite(bits):
+        raise ValueError(f"Non-finite deterministic evaluation metric in {path}")
+    if abs(bits - nll / math.log(2.0)) > 1e-12:
+        raise ValueError(f"Deterministic NLL/bits conversion mismatch in {path}")
+
 def only_text8_result(path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     payload = read_json(path)
     if payload.get("benchmark") != "text8" or payload.get("split") != "test":
@@ -50,8 +76,7 @@ def only_text8_result(path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
         raise ValueError(f"Expected exactly one text8 model in {path}")
     row = next(iter(models.values()))
     result = row.get("result", {})
-    if int(result.get("chars_evaluated", 0)) != TEXT8_CHARS:
-        raise ValueError(f"text8 report did not cover {TEXT8_CHARS:,} scored characters: {path}")
+    validate_deterministic_result(result, TEXT8_CHARS, path)
     return row, payload
 
 
@@ -72,8 +97,7 @@ def retention_final(path: Path, seed: int) -> tuple[dict[str, Any], dict[str, An
     if len(candidates) != 1:
         raise ValueError(f"Expected one unsuffixed seed-{seed} final in {path}, found {len(candidates)}")
     result = candidates[0].get("result", {})
-    if int(result.get("chars_evaluated", 0)) != RETENTION_CHARS:
-        raise ValueError(f"Retention report did not cover {RETENTION_CHARS:,} scored characters: {path}")
+    validate_deterministic_result(result, RETENTION_CHARS, path)
     return candidates[0], payload
 
 
@@ -84,6 +108,9 @@ def validate_checkpoint_meta(meta: dict[str, Any], seed: int, label: str) -> Non
         raise ValueError(f"{label} seed {seed} does not have 40,000 formation forward passes")
     if int(meta.get("parameters", -1)) != EXPECTED_PARAMETERS:
         raise ValueError(f"{label} seed {seed} parameter count mismatch")
+    checkpoint = Path(str(meta.get("checkpoint", "")))
+    if f"seed{seed}" not in checkpoint.name or "_step" in checkpoint.stem:
+        raise ValueError(f"{label} seed {seed} does not identify the same-seed unsuffixed final checkpoint")
 
 
 def training_guard(row: dict[str, Any], seed: int) -> dict[str, Any]:

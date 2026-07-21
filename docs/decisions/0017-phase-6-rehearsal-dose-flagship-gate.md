@@ -153,6 +153,30 @@ from decision lines, not enthusiasm.
 4. If Part 0 fires (`>= 0.1625`), the behavior axis reopens as a SEPARATE
    intake candidate; it does not modify the D2 gate.
 
+## Implementation status (updated 2026-07-22)
+
+Implementation: Stage 59 COMPLETE on 2026-07-21, verdict **E-partial**
+under H025's partition (seed 11 CONFIRM-side at `d = +0.009654` /
+`r = +2.703539`; seed 19 neither side at `d = +0.012353` / `r = +2.669048`;
+no KILL-side seed, so no escalation; both instability guards passed; every
+deciding number verified against `runs/stage59_verdict.json` and its named
+source files at read-back). **D2 therefore does NOT fire: Stage 60 is not
+authorized**, and Phase 6 returns to intake carrying the measured
+dose-response curve (proxy dose means in `runs/stage59_mixing_law_fit.md`;
+the 85M toll at `w = 0.10` is about `0.011` bits/char while retention gain
+saturates near `2.7` by that dose). The D3 `w_flag` machinery is moot. The
+secondary transfer read registered NOT_DECISION_GRADE (predicted `0.023045`
+versus measured `0.011004`, ratio `2.094`, wrong side of the `0.020` line),
+so reopen item 2's fallback stands in its stronger form: proxy mixing laws
+are out of the toolkit at this scale. Part 0 fired the ADR 0016 clause-3
+behavior-axis reopen (`0.194336` versus `0.1625`); per D2 that outcome is
+an intake candidate (H026 class) and never touched the gate. The
+falsifiability ordering held: the frozen fit file predates the first
+Part 2 launch by 39 minutes in the launcher logs. Intake candidates now on
+the table, per this ADR and ADR 0016 Decision 3: the recipe and capacity
+frontier, the H026 diverse-data circuit-formation axis, and any freshly
+grounded dose follow-up (which would need a new ADR; this gate is spent).
+
 ## Links
 
 - `docs/hypotheses/025-rehearsal-dose-response-and-mixing-law.md` (the authority for Stage 59)

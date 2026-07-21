@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import statistics
@@ -16,6 +17,37 @@ DEFAULT_SUMMARY = LAB_DIR / "runs" / "stage59_mixing_law_fit.md"
 EXPECTED_DOSES = (0.0, 0.05, 0.10, 0.20, 0.30, 0.50)
 EXPECTED_SEEDS = (7, 11, 19)
 EXPECTED_CONFIG = "stage59_proxy_random_full"
+EXPECTED_PARAMETERS = 3_176_481
+EXPECTED_STEPS = 5_000
+REGISTERED_FIELDS: dict[str, object] = {
+    "n_layer": 4,
+    "n_head": 4,
+    "n_embd": 256,
+    "block_size": 256,
+    "batch_size": 8,
+    "grad_accum_steps": 2,
+    "effective_batch_size": 16,
+    "pos_encoding": "rope",
+    "activation_checkpoint": True,
+    "precision": "fp32",
+    "optimizer": "muon",
+    "lr_schedule": "cosine",
+    "lr_final_frac": 0.1,
+    "lr_total_steps": EXPECTED_STEPS,
+    "vocab_size": 33,
+    "vocab_chars_override": True,
+    "parameters": EXPECTED_PARAMETERS,
+    "trainable_parameters": EXPECTED_PARAMETERS,
+    "frozen_prior_parameters": 0,
+    "steps": EXPECTED_STEPS,
+    "formation_steps": EXPECTED_STEPS,
+    "formation_forward_passes": EXPECTED_STEPS * 2,
+    "eval_mode": "sampled",
+    "eval_batches": 16,
+    "retention_eval_mode": "sampled",
+    "retention_eval_batches": 16,
+    "copy_train_marker": "",
+}
 DOSE_SCALE = 0.50
 
 
@@ -39,13 +71,17 @@ def validate_rows(rows: list[dict[str, object]]) -> None:
     observed: set[tuple[float, int]] = set()
     parameters: set[int] = set()
     steps: set[int] = set()
+    metric_names = (
+        "val_nll",
+        "val_bits_per_char",
+        "retention_val_nll",
+        "retention_val_bits_per_char",
+    )
     for row in rows:
         if row.get("comparison_name") != EXPECTED_CONFIG:
             raise ValueError(f"Unexpected config in sweep: {row.get('comparison_name')!r}")
         if row.get("mixture_dose") is None:
             raise ValueError("Every sweep row must carry mixture_dose")
-        if row.get("retention_val_bits_per_char") is None:
-            raise ValueError("Every sweep row must carry retention_val_bits_per_char")
         dose = round(float(row["mixture_dose"]), 8)
         seed = int(row["seed"])
         key = (dose, seed)
@@ -54,20 +90,36 @@ def validate_rows(rows: list[dict[str, object]]) -> None:
         observed.add(key)
         parameters.add(int(row["parameters"]))
         steps.add(int(row["steps"]))
-        if (
-            row.get("eval_mode") != "sampled"
-            or int(row.get("eval_batches") or 0) != 16
-            or int(row.get("retention_eval_batches") or 0) != 16
-        ):
-            raise ValueError(f"Evaluation convention mismatch for dose={dose} seed={seed}")
+        mismatches = {
+            name: {"expected": expected_value, "observed": row.get(name)}
+            for name, expected_value in REGISTERED_FIELDS.items()
+            if row.get(name) != expected_value
+        }
+        if mismatches:
+            raise ValueError(f"Registered proxy surface mismatch for dose={dose} seed={seed}: {mismatches}")
+        if int(row.get("retention_eval_seed") or -1) != seed + 59_000:
+            raise ValueError(f"Auxiliary evaluation seed mismatch for dose={dose} seed={seed}")
+        if not str(row.get("retention_eval_corpus") or ""):
+            raise ValueError(f"Missing auxiliary retention corpus for dose={dose} seed={seed}")
+        for metric in metric_names:
+            value = row.get(metric)
+            if value is None or not math.isfinite(float(value)):
+                raise ValueError(f"Missing or non-finite {metric} for dose={dose} seed={seed}")
+        broad_error = abs(float(row["val_bits_per_char"]) - float(row["val_nll"]) / math.log(2.0))
+        retention_error = abs(
+            float(row["retention_val_bits_per_char"])
+            - float(row["retention_val_nll"]) / math.log(2.0)
+        )
+        if broad_error > 3e-6 or retention_error > 3e-6:
+            raise ValueError(f"NLL/bits conversion mismatch for dose={dose} seed={seed}")
     if observed != expected:
         missing = sorted(expected - observed)
         extra = sorted(observed - expected)
         raise ValueError(f"Sweep grid mismatch; missing={missing} extra={extra}")
-    if len(parameters) != 1:
-        raise ValueError(f"Parameter count changed across sweep: {sorted(parameters)}")
-    if len(steps) != 1:
-        raise ValueError(f"Step count changed across sweep: {sorted(steps)}")
+    if parameters != {EXPECTED_PARAMETERS}:
+        raise ValueError(f"Proxy parameter count mismatch: {sorted(parameters)}")
+    if steps != {EXPECTED_STEPS}:
+        raise ValueError(f"Proxy step budget mismatch: {sorted(steps)}")
 
 
 def mean_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
@@ -298,6 +350,7 @@ def make_payload(input_path: Path, rows: list[dict[str, object]]) -> dict[str, o
         "title": "Stage 59 H025 proxy mixing-law fit",
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "input": str(input_path),
+        "input_sha256": hashlib.sha256(input_path.read_bytes()).hexdigest(),
         "rows": len(rows),
         "expected_doses": list(EXPECTED_DOSES),
         "expected_seeds": list(EXPECTED_SEEDS),
@@ -354,6 +407,7 @@ def write_summary(path: Path, payload: dict[str, object]) -> None:
         "# Stage 59 H025 Proxy Mixing-Law Fit",
         "",
         f"- input: `{payload['input']}`",
+        f"- input SHA-256: `{payload['input_sha256']}`",
         f"- rows: {payload['rows']} (6 doses x 3 seeds)",
         f"- proxy parameters: {int(payload['parameters']):,}",
         f"- steps per run: {int(payload['steps_per_run']):,}",
