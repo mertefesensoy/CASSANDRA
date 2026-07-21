@@ -1,0 +1,96 @@
+{
+  "source": "experiments\\tiny_language_lab\\corpus\\text8\\text8",
+  "source_chars": 100000000,
+  "alphabet": " abcdefghijklmnopqrstuvwxyz",
+  "standard_split": {
+    "train": [
+      0,
+      90000000
+    ],
+    "valid": [
+      90000000,
+      95000000
+    ],
+    "test": [
+      95000000,
+      100000000
+    ]
+  },
+  "seed_file": "experiments\\tiny_language_lab\\corpus\\text8_char_seed.txt",
+  "seed_chars": 95000000,
+  "seed_sha256": "a27d3a863dbd8102fb14618aa65e966c40117d9ce852ac02a290b4a5078e0aeb",
+  "out_dir": "experiments\\tiny_language_lab\\corpus\\text8_char_shards",
+  "shard_chars": 10000000,
+  "train_shards": [
+    {
+      "path": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\train_0000.txt",
+      "start": 0,
+      "end": 10000000,
+      "chars": 10000000,
+      "sha256": "e5bc9580d197612032534e743716f44813367eaabd73165f4691b7a9d3490eb0"
+    },
+    {
+      "path": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\train_0001.txt",
+      "start": 10000000,
+      "end": 20000000,
+      "chars": 10000000,
+      "sha256": "c4f5cda2db40e1898629fa7e015f22c2ab2b07a66946e1d621dbcefd1f37de0b"
+    },
+    {
+      "path": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\train_0002.txt",
+      "start": 20000000,
+      "end": 30000000,
+      "chars": 10000000,
+      "sha256": "d80a9a79d1aa84d95804356796ee78512b80055336906d7251f3ef71b1b1ca05"
+    },
+    {
+      "path": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\train_0003.txt",
+      "start": 30000000,
+      "end": 40000000,
+      "chars": 10000000,
+      "sha256": "dff75933d9812146c06e56426eeaa5db4a90577b191ac8f144735ada1b763063"
+    },
+    {
+      "path": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\train_0004.txt",
+      "start": 40000000,
+      "end": 50000000,
+      "chars": 10000000,
+      "sha256": "307f7ab7ad4b5f45ff1f6552db3267c7d5b0cccf91bebfd32543b7e798438edf"
+    },
+    {
+      "path": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\train_0005.txt",
+      "start": 50000000,
+      "end": 60000000,
+      "chars": 10000000,
+      "sha256": "9f00e41cef9d766747d20353e5ca274189fd4d7c1df8231407a00a37d1d2d5b9"
+    },
+    {
+      "path": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\train_0006.txt",
+      "start": 60000000,
+      "end": 70000000,
+      "chars": 10000000,
+      "sha256": "793473804ed519aee784e5c371c3bf0b2fb290f28ef6cd9827b8ae848cc05d58"
+    },
+    {
+      "path": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\train_0007.txt",
+      "start": 70000000,
+      "end": 80000000,
+      "chars": 10000000,
+      "sha256": "56f966e14887cb6d66bc8d33659555c95ee715810590888d818a3635f694bd00"
+    },
+    {
+      "path": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\train_0008.txt",
+      "start": 80000000,
+      "end": 90000000,
+      "chars": 10000000,
+      "sha256": "793321a18e3b05d8744f2de6ebc74906d9d226226f7371adcf955c8ef4125a32"
+    }
+  ],
+  "train_chars": 90000000,
+  "val_file": "experiments\\tiny_language_lab\\corpus\\text8_char_shards\\val.txt",
+  "val_chars": 5000000,
+  "val_sha256": "c9395f11fb185c7cf73f57134be37b6a32c6364ce36e9cec3127d27c7b8bc5dd",
+  "test_chars": 5000000,
+  "test_sha256": "b336f67a7616a0d94ed6cc2049437928aafe01318e76a84abe6918320660f98c",
+  "contamination_assert": "exact 5M-char test segment absent from seed, train, and val text"
+}

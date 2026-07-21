@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.pyc*
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+experiments/**/last_logits.pt
+experiments/**/last_transformer.pt
+experiments/**/runs/

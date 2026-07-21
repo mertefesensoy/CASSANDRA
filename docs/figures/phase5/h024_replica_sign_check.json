@@ -1,0 +1,42 @@
+{
+  "metric": "CURRICULUM minus COLD deterministic text8 TEST bits/char",
+  "lower_is_better": true,
+  "primary_seed7_read": "E-null",
+  "replica_signs_agree": true,
+  "marginal_seed7": false,
+  "escalation_required": false,
+  "conclusion": "seed-robust in sign; no full-budget replica escalation required",
+  "rows": [
+    {
+      "seed": 7,
+      "budget": 42000,
+      "cold_bits_per_char": 1.3573176822147175,
+      "curriculum_bits_per_char": 1.3624141296719878,
+      "curriculum_minus_cold": 0.005096447457270337,
+      "chars_evaluated": 4999936,
+      "cold_checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7.pt",
+      "curriculum_checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b42000_seed7_random_full_seed7.pt"
+    },
+    {
+      "seed": 11,
+      "budget": 20000,
+      "cold_bits_per_char": 1.410153858867071,
+      "curriculum_bits_per_char": 1.4199985967825135,
+      "curriculum_minus_cold": 0.009844737915442492,
+      "chars_evaluated": 4999936,
+      "cold_checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b20000_seed11_random_full_seed11.pt",
+      "curriculum_checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b20000_seed11_random_full_seed11.pt"
+    },
+    {
+      "seed": 19,
+      "budget": 20000,
+      "cold_bits_per_char": 1.4107794142838799,
+      "curriculum_bits_per_char": 1.418570846249826,
+      "curriculum_minus_cold": 0.007791431965946227,
+      "chars_evaluated": 4999936,
+      "cold_checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b20000_seed19_random_full_seed19.pt",
+      "curriculum_checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b20000_seed19_random_full_seed19.pt"
+    }
+  ],
+  "figure": "fig3_h024_replica_sign_check.png"
+}

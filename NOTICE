@@ -1,0 +1,23 @@
+Cassandra
+Copyright 2026 Mert Efe Sensoy
+
+This product includes software developed as part of the Cassandra
+research workspace (a laptop-scale language-model formation lab).
+
+Third-party lineage acknowledgments:
+
+- Muon optimizer: the single-device Muon-with-auxiliary-Adam training
+  path in `experiments/tiny_language_lab/cassandra_tiny_transformer.py`
+  is adapted from the design published in the KellerJordan/Muon
+  repository (https://github.com/KellerJordan/Muon), MIT licensed.
+  Copyright (c) the Muon authors.
+
+Dataset provenance (data is NOT distributed with this repository):
+
+- TinyStories (Eldan and Li, 2023), Hugging Face dataset
+  `roneneldan/TinyStories`, license CDLA-Sharing-1.0. Only preparation
+  scripts and provenance metadata ship here.
+- text8 (Matt Mahoney's cleaned Wikipedia benchmark,
+  https://mattmahoney.net/dc/textdata.html); underlying text lineage is
+  Wikipedia (CC BY-SA / GFDL). Only preparation scripts and provenance
+  metadata ship here.

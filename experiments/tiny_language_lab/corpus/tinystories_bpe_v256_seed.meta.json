@@ -1,0 +1,1834 @@
+{
+  "source": "experiments\\tiny_language_lab\\corpus\\tinystories_char_seed.txt",
+  "out": "experiments\\tiny_language_lab\\corpus\\tinystories_bpe_v256_seed.txt",
+  "encoding": "private-use-codepoint-per-bpe-token",
+  "private_use_base": 57344,
+  "requested_vocab_size": 256,
+  "actual_vocab_size": 256,
+  "source_chars": 1000000,
+  "train_chars": 500000,
+  "encoded_tokens": 446694,
+  "compression_chars_per_token": 2.238668976973051,
+  "min_pair_count": 2,
+  "vocab": [
+    "\n",
+    " ",
+    "!",
+    "'",
+    ",",
+    ".",
+    "?",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "e ",
+    "d ",
+    "th",
+    " a",
+    "t ",
+    "er",
+    " s",
+    " th",
+    "ed ",
+    "in",
+    " h",
+    "nd ",
+    "wa",
+    "to",
+    "s ",
+    "en",
+    "y ",
+    " the ",
+    "ou",
+    "on",
+    " and ",
+    "he ",
+    ".\n",
+    "ing",
+    "ar",
+    "the ",
+    " b",
+    "an",
+    "ll",
+    "it",
+    "was",
+    "or",
+    "to ",
+    "om",
+    ". ",
+    ", ",
+    " he ",
+    "of",
+    " she ",
+    "re",
+    "it ",
+    " a ",
+    "er ",
+    "im",
+    "and ",
+    "was ",
+    "id",
+    "lo",
+    "at ",
+    "ver",
+    "el",
+    "ir",
+    "o ",
+    "ay",
+    "ex",
+    "ac",
+    "wh",
+    "end",
+    "le ",
+    "ing ",
+    "ri",
+    "ere ",
+    "sa",
+    ". he ",
+    "st",
+    "le",
+    "ad ",
+    "ld ",
+    "ow",
+    "pp",
+    "is ",
+    "wi",
+    "gh",
+    "ch",
+    "pl",
+    ". she ",
+    " the",
+    "ked ",
+    "l ",
+    "ed",
+    "ma",
+    "un",
+    "ic",
+    "up",
+    "one ",
+    "tim",
+    "for",
+    "ed to ",
+    "li",
+    "was s",
+    "am",
+    "with",
+    "es",
+    "ec",
+    "itt",
+    "ut ",
+    "day",
+    "is",
+    "at",
+    "a ",
+    "oft",
+    "ext",
+    "litt",
+    "little ",
+    "ne",
+    "endoft",
+    "endoftext",
+    "endoftext\n",
+    "k ",
+    "il",
+    "as",
+    "you",
+    "app",
+    "ould ",
+    "av",
+    "ke ",
+    "in the ",
+    "ig",
+    "ce ",
+    "ed and ",
+    ". the ",
+    " sa",
+    "gir",
+    "us",
+    ".\nthe ",
+    ".\nendoftext\n",
+    " f",
+    "go",
+    "ome",
+    "ge",
+    "ever",
+    "bo",
+    "ur",
+    "ound ",
+    "mom",
+    " they ",
+    "al",
+    "wan",
+    "ro",
+    "no",
+    "loo",
+    "once ",
+    "all",
+    "ear",
+    "to the ",
+    "e,",
+    "an ",
+    "id ",
+    "fu",
+    "ere was",
+    "had ",
+    "en ",
+    " his ",
+    " that ",
+    "e and ",
+    "she ",
+    "ly",
+    "the",
+    "her ",
+    " her ",
+    " a b",
+    " but ",
+    "ent",
+    "!\n",
+    "on a ",
+    "ent ",
+    " happ",
+    "were ",
+    "way",
+    "jo",
+    "'s ",
+    ".\nendoftext\n\n",
+    "ad",
+    "ter",
+    "ll ",
+    "car",
+    "'t ",
+    "want",
+    "upon a ",
+    "fri",
+    "one day",
+    "once upon a ",
+    "once upon a tim",
+    "um",
+    "ta",
+    "ther",
+    "ke",
+    "be",
+    "girl ",
+    "gr",
+    "ed to",
+    "y and ",
+    "ed the ",
+    ". it ",
+    "said",
+    "ack",
+    "play",
+    "out ",
+    "y s",
+    "ave ",
+    "very ",
+    " so",
+    "ay ",
+    "tr",
+    "sh",
+    "se",
+    " an",
+    "friend",
+    "fr",
+    ", the ",
+    ", and ",
+    "ere was a ",
+    "that ",
+    "his ",
+    "au",
+    " c",
+    "ab",
+    "mi",
+    "would ",
+    "ome ",
+    "exc",
+    "mil",
+    " had "
+  ],
+  "merges": [
+    {
+      "left": 11,
+      "right": 1,
+      "merged": 33,
+      "count_at_merge": 18757,
+      "token": "e "
+    },
+    {
+      "left": 10,
+      "right": 1,
+      "merged": 34,
+      "count_at_merge": 13502,
+      "token": "d "
+    },
+    {
+      "left": 26,
+      "right": 14,
+      "merged": 35,
+      "count_at_merge": 11630,
+      "token": "th"
+    },
+    {
+      "left": 1,
+      "right": 7,
+      "merged": 36,
+      "count_at_merge": 7581,
+      "token": " a"
+    },
+    {
+      "left": 26,
+      "right": 1,
+      "merged": 37,
+      "count_at_merge": 6863,
+      "token": "t "
+    },
+    {
+      "left": 11,
+      "right": 24,
+      "merged": 38,
+      "count_at_merge": 6141,
+      "token": "er"
+    },
+    {
+      "left": 1,
+      "right": 25,
+      "merged": 39,
+      "count_at_merge": 6012,
+      "token": " s"
+    },
+    {
+      "left": 1,
+      "right": 35,
+      "merged": 40,
+      "count_at_merge": 5957,
+      "token": " th"
+    },
+    {
+      "left": 11,
+      "right": 34,
+      "merged": 41,
+      "count_at_merge": 5429,
+      "token": "ed "
+    },
+    {
+      "left": 15,
+      "right": 20,
+      "merged": 42,
+      "count_at_merge": 5199,
+      "token": "in"
+    },
+    {
+      "left": 1,
+      "right": 14,
+      "merged": 43,
+      "count_at_merge": 5065,
+      "token": " h"
+    },
+    {
+      "left": 20,
+      "right": 34,
+      "merged": 44,
+      "count_at_merge": 4920,
+      "token": "nd "
+    },
+    {
+      "left": 29,
+      "right": 7,
+      "merged": 45,
+      "count_at_merge": 4883,
+      "token": "wa"
+    },
+    {
+      "left": 26,
+      "right": 21,
+      "merged": 46,
+      "count_at_merge": 4612,
+      "token": "to"
+    },
+    {
+      "left": 25,
+      "right": 1,
+      "merged": 47,
+      "count_at_merge": 3979,
+      "token": "s "
+    },
+    {
+      "left": 11,
+      "right": 20,
+      "merged": 48,
+      "count_at_merge": 3785,
+      "token": "en"
+    },
+    {
+      "left": 31,
+      "right": 1,
+      "merged": 49,
+      "count_at_merge": 3687,
+      "token": "y "
+    },
+    {
+      "left": 40,
+      "right": 33,
+      "merged": 50,
+      "count_at_merge": 3612,
+      "token": " the "
+    },
+    {
+      "left": 21,
+      "right": 27,
+      "merged": 51,
+      "count_at_merge": 3511,
+      "token": "ou"
+    },
+    {
+      "left": 21,
+      "right": 20,
+      "merged": 52,
+      "count_at_merge": 3288,
+      "token": "on"
+    },
+    {
+      "left": 36,
+      "right": 44,
+      "merged": 53,
+      "count_at_merge": 2888,
+      "token": " and "
+    },
+    {
+      "left": 14,
+      "right": 33,
+      "merged": 54,
+      "count_at_merge": 2554,
+      "token": "he "
+    },
+    {
+      "left": 5,
+      "right": 0,
+      "merged": 55,
+      "count_at_merge": 2498,
+      "token": ".\n"
+    },
+    {
+      "left": 42,
+      "right": 13,
+      "merged": 56,
+      "count_at_merge": 2460,
+      "token": "ing"
+    },
+    {
+      "left": 7,
+      "right": 24,
+      "merged": 57,
+      "count_at_merge": 2446,
+      "token": "ar"
+    },
+    {
+      "left": 35,
+      "right": 33,
+      "merged": 58,
+      "count_at_merge": 2342,
+      "token": "the "
+    },
+    {
+      "left": 1,
+      "right": 8,
+      "merged": 59,
+      "count_at_merge": 2117,
+      "token": " b"
+    },
+    {
+      "left": 7,
+      "right": 20,
+      "merged": 60,
+      "count_at_merge": 2065,
+      "token": "an"
+    },
+    {
+      "left": 18,
+      "right": 18,
+      "merged": 61,
+      "count_at_merge": 1947,
+      "token": "ll"
+    },
+    {
+      "left": 15,
+      "right": 26,
+      "merged": 62,
+      "count_at_merge": 1896,
+      "token": "it"
+    },
+    {
+      "left": 45,
+      "right": 25,
+      "merged": 63,
+      "count_at_merge": 1834,
+      "token": "was"
+    },
+    {
+      "left": 21,
+      "right": 24,
+      "merged": 64,
+      "count_at_merge": 1831,
+      "token": "or"
+    },
+    {
+      "left": 46,
+      "right": 1,
+      "merged": 65,
+      "count_at_merge": 1826,
+      "token": "to "
+    },
+    {
+      "left": 21,
+      "right": 19,
+      "merged": 66,
+      "count_at_merge": 1820,
+      "token": "om"
+    },
+    {
+      "left": 5,
+      "right": 1,
+      "merged": 67,
+      "count_at_merge": 1767,
+      "token": ". "
+    },
+    {
+      "left": 4,
+      "right": 1,
+      "merged": 68,
+      "count_at_merge": 1759,
+      "token": ", "
+    },
+    {
+      "left": 43,
+      "right": 33,
+      "merged": 69,
+      "count_at_merge": 1743,
+      "token": " he "
+    },
+    {
+      "left": 21,
+      "right": 12,
+      "merged": 70,
+      "count_at_merge": 1622,
+      "token": "of"
+    },
+    {
+      "left": 39,
+      "right": 54,
+      "merged": 71,
+      "count_at_merge": 1621,
+      "token": " she "
+    },
+    {
+      "left": 24,
+      "right": 11,
+      "merged": 72,
+      "count_at_merge": 1587,
+      "token": "re"
+    },
+    {
+      "left": 15,
+      "right": 37,
+      "merged": 73,
+      "count_at_merge": 1578,
+      "token": "it "
+    },
+    {
+      "left": 36,
+      "right": 1,
+      "merged": 74,
+      "count_at_merge": 1562,
+      "token": " a "
+    },
+    {
+      "left": 38,
+      "right": 1,
+      "merged": 75,
+      "count_at_merge": 1513,
+      "token": "er "
+    },
+    {
+      "left": 15,
+      "right": 19,
+      "merged": 76,
+      "count_at_merge": 1477,
+      "token": "im"
+    },
+    {
+      "left": 7,
+      "right": 44,
+      "merged": 77,
+      "count_at_merge": 1408,
+      "token": "and "
+    },
+    {
+      "left": 45,
+      "right": 47,
+      "merged": 78,
+      "count_at_merge": 1365,
+      "token": "was "
+    },
+    {
+      "left": 15,
+      "right": 10,
+      "merged": 79,
+      "count_at_merge": 1304,
+      "token": "id"
+    },
+    {
+      "left": 18,
+      "right": 21,
+      "merged": 80,
+      "count_at_merge": 1274,
+      "token": "lo"
+    },
+    {
+      "left": 7,
+      "right": 37,
+      "merged": 81,
+      "count_at_merge": 1269,
+      "token": "at "
+    },
+    {
+      "left": 28,
+      "right": 38,
+      "merged": 82,
+      "count_at_merge": 1229,
+      "token": "ver"
+    },
+    {
+      "left": 11,
+      "right": 18,
+      "merged": 83,
+      "count_at_merge": 1224,
+      "token": "el"
+    },
+    {
+      "left": 15,
+      "right": 24,
+      "merged": 84,
+      "count_at_merge": 1213,
+      "token": "ir"
+    },
+    {
+      "left": 21,
+      "right": 1,
+      "merged": 85,
+      "count_at_merge": 1203,
+      "token": "o "
+    },
+    {
+      "left": 7,
+      "right": 31,
+      "merged": 86,
+      "count_at_merge": 1179,
+      "token": "ay"
+    },
+    {
+      "left": 11,
+      "right": 30,
+      "merged": 87,
+      "count_at_merge": 1175,
+      "token": "ex"
+    },
+    {
+      "left": 7,
+      "right": 9,
+      "merged": 88,
+      "count_at_merge": 1131,
+      "token": "ac"
+    },
+    {
+      "left": 29,
+      "right": 14,
+      "merged": 89,
+      "count_at_merge": 1114,
+      "token": "wh"
+    },
+    {
+      "left": 48,
+      "right": 10,
+      "merged": 90,
+      "count_at_merge": 1093,
+      "token": "end"
+    },
+    {
+      "left": 18,
+      "right": 33,
+      "merged": 91,
+      "count_at_merge": 1083,
+      "token": "le "
+    },
+    {
+      "left": 56,
+      "right": 1,
+      "merged": 92,
+      "count_at_merge": 1070,
+      "token": "ing "
+    },
+    {
+      "left": 24,
+      "right": 15,
+      "merged": 93,
+      "count_at_merge": 1040,
+      "token": "ri"
+    },
+    {
+      "left": 38,
+      "right": 33,
+      "merged": 94,
+      "count_at_merge": 1027,
+      "token": "ere "
+    },
+    {
+      "left": 25,
+      "right": 7,
+      "merged": 95,
+      "count_at_merge": 1023,
+      "token": "sa"
+    },
+    {
+      "left": 5,
+      "right": 69,
+      "merged": 96,
+      "count_at_merge": 1021,
+      "token": ". he "
+    },
+    {
+      "left": 25,
+      "right": 26,
+      "merged": 97,
+      "count_at_merge": 1013,
+      "token": "st"
+    },
+    {
+      "left": 18,
+      "right": 11,
+      "merged": 98,
+      "count_at_merge": 994,
+      "token": "le"
+    },
+    {
+      "left": 7,
+      "right": 34,
+      "merged": 99,
+      "count_at_merge": 958,
+      "token": "ad "
+    },
+    {
+      "left": 18,
+      "right": 34,
+      "merged": 100,
+      "count_at_merge": 948,
+      "token": "ld "
+    },
+    {
+      "left": 21,
+      "right": 29,
+      "merged": 101,
+      "count_at_merge": 946,
+      "token": "ow"
+    },
+    {
+      "left": 22,
+      "right": 22,
+      "merged": 102,
+      "count_at_merge": 903,
+      "token": "pp"
+    },
+    {
+      "left": 15,
+      "right": 47,
+      "merged": 103,
+      "count_at_merge": 897,
+      "token": "is "
+    },
+    {
+      "left": 29,
+      "right": 15,
+      "merged": 104,
+      "count_at_merge": 884,
+      "token": "wi"
+    },
+    {
+      "left": 13,
+      "right": 14,
+      "merged": 105,
+      "count_at_merge": 882,
+      "token": "gh"
+    },
+    {
+      "left": 9,
+      "right": 14,
+      "merged": 106,
+      "count_at_merge": 874,
+      "token": "ch"
+    },
+    {
+      "left": 22,
+      "right": 18,
+      "merged": 107,
+      "count_at_merge": 873,
+      "token": "pl"
+    },
+    {
+      "left": 5,
+      "right": 71,
+      "merged": 108,
+      "count_at_merge": 872,
+      "token": ". she "
+    },
+    {
+      "left": 40,
+      "right": 11,
+      "merged": 109,
+      "count_at_merge": 860,
+      "token": " the"
+    },
+    {
+      "left": 17,
+      "right": 41,
+      "merged": 110,
+      "count_at_merge": 848,
+      "token": "ked "
+    },
+    {
+      "left": 18,
+      "right": 1,
+      "merged": 111,
+      "count_at_merge": 835,
+      "token": "l "
+    },
+    {
+      "left": 11,
+      "right": 10,
+      "merged": 112,
+      "count_at_merge": 829,
+      "token": "ed"
+    },
+    {
+      "left": 19,
+      "right": 7,
+      "merged": 113,
+      "count_at_merge": 826,
+      "token": "ma"
+    },
+    {
+      "left": 27,
+      "right": 20,
+      "merged": 114,
+      "count_at_merge": 792,
+      "token": "un"
+    },
+    {
+      "left": 15,
+      "right": 9,
+      "merged": 115,
+      "count_at_merge": 773,
+      "token": "ic"
+    },
+    {
+      "left": 27,
+      "right": 22,
+      "merged": 116,
+      "count_at_merge": 773,
+      "token": "up"
+    },
+    {
+      "left": 52,
+      "right": 33,
+      "merged": 117,
+      "count_at_merge": 771,
+      "token": "one "
+    },
+    {
+      "left": 26,
+      "right": 76,
+      "merged": 118,
+      "count_at_merge": 769,
+      "token": "tim"
+    },
+    {
+      "left": 12,
+      "right": 64,
+      "merged": 119,
+      "count_at_merge": 763,
+      "token": "for"
+    },
+    {
+      "left": 41,
+      "right": 65,
+      "merged": 120,
+      "count_at_merge": 758,
+      "token": "ed to "
+    },
+    {
+      "left": 18,
+      "right": 15,
+      "merged": 121,
+      "count_at_merge": 752,
+      "token": "li"
+    },
+    {
+      "left": 63,
+      "right": 39,
+      "merged": 122,
+      "count_at_merge": 727,
+      "token": "was s"
+    },
+    {
+      "left": 7,
+      "right": 19,
+      "merged": 123,
+      "count_at_merge": 712,
+      "token": "am"
+    },
+    {
+      "left": 104,
+      "right": 35,
+      "merged": 124,
+      "count_at_merge": 711,
+      "token": "with"
+    },
+    {
+      "left": 11,
+      "right": 25,
+      "merged": 125,
+      "count_at_merge": 709,
+      "token": "es"
+    },
+    {
+      "left": 11,
+      "right": 9,
+      "merged": 126,
+      "count_at_merge": 706,
+      "token": "ec"
+    },
+    {
+      "left": 62,
+      "right": 26,
+      "merged": 127,
+      "count_at_merge": 697,
+      "token": "itt"
+    },
+    {
+      "left": 27,
+      "right": 37,
+      "merged": 128,
+      "count_at_merge": 694,
+      "token": "ut "
+    },
+    {
+      "left": 10,
+      "right": 86,
+      "merged": 129,
+      "count_at_merge": 685,
+      "token": "day"
+    },
+    {
+      "left": 15,
+      "right": 25,
+      "merged": 130,
+      "count_at_merge": 679,
+      "token": "is"
+    },
+    {
+      "left": 7,
+      "right": 26,
+      "merged": 131,
+      "count_at_merge": 670,
+      "token": "at"
+    },
+    {
+      "left": 7,
+      "right": 1,
+      "merged": 132,
+      "count_at_merge": 655,
+      "token": "a "
+    },
+    {
+      "left": 70,
+      "right": 26,
+      "merged": 133,
+      "count_at_merge": 647,
+      "token": "oft"
+    },
+    {
+      "left": 87,
+      "right": 26,
+      "merged": 134,
+      "count_at_merge": 647,
+      "token": "ext"
+    },
+    {
+      "left": 18,
+      "right": 127,
+      "merged": 135,
+      "count_at_merge": 644,
+      "token": "litt"
+    },
+    {
+      "left": 135,
+      "right": 91,
+      "merged": 136,
+      "count_at_merge": 633,
+      "token": "little "
+    },
+    {
+      "left": 20,
+      "right": 11,
+      "merged": 137,
+      "count_at_merge": 626,
+      "token": "ne"
+    },
+    {
+      "left": 90,
+      "right": 133,
+      "merged": 138,
+      "count_at_merge": 626,
+      "token": "endoft"
+    },
+    {
+      "left": 138,
+      "right": 134,
+      "merged": 139,
+      "count_at_merge": 626,
+      "token": "endoftext"
+    },
+    {
+      "left": 139,
+      "right": 0,
+      "merged": 140,
+      "count_at_merge": 626,
+      "token": "endoftext\n"
+    },
+    {
+      "left": 17,
+      "right": 1,
+      "merged": 141,
+      "count_at_merge": 626,
+      "token": "k "
+    },
+    {
+      "left": 15,
+      "right": 18,
+      "merged": 142,
+      "count_at_merge": 616,
+      "token": "il"
+    },
+    {
+      "left": 7,
+      "right": 25,
+      "merged": 143,
+      "count_at_merge": 599,
+      "token": "as"
+    },
+    {
+      "left": 31,
+      "right": 51,
+      "merged": 144,
+      "count_at_merge": 586,
+      "token": "you"
+    },
+    {
+      "left": 7,
+      "right": 102,
+      "merged": 145,
+      "count_at_merge": 579,
+      "token": "app"
+    },
+    {
+      "left": 51,
+      "right": 100,
+      "merged": 146,
+      "count_at_merge": 572,
+      "token": "ould "
+    },
+    {
+      "left": 7,
+      "right": 28,
+      "merged": 147,
+      "count_at_merge": 555,
+      "token": "av"
+    },
+    {
+      "left": 17,
+      "right": 33,
+      "merged": 148,
+      "count_at_merge": 548,
+      "token": "ke "
+    },
+    {
+      "left": 42,
+      "right": 50,
+      "merged": 149,
+      "count_at_merge": 547,
+      "token": "in the "
+    },
+    {
+      "left": 15,
+      "right": 13,
+      "merged": 150,
+      "count_at_merge": 547,
+      "token": "ig"
+    },
+    {
+      "left": 9,
+      "right": 33,
+      "merged": 151,
+      "count_at_merge": 535,
+      "token": "ce "
+    },
+    {
+      "left": 41,
+      "right": 77,
+      "merged": 152,
+      "count_at_merge": 528,
+      "token": "ed and "
+    },
+    {
+      "left": 5,
+      "right": 50,
+      "merged": 153,
+      "count_at_merge": 516,
+      "token": ". the "
+    },
+    {
+      "left": 39,
+      "right": 7,
+      "merged": 154,
+      "count_at_merge": 512,
+      "token": " sa"
+    },
+    {
+      "left": 13,
+      "right": 84,
+      "merged": 155,
+      "count_at_merge": 508,
+      "token": "gir"
+    },
+    {
+      "left": 27,
+      "right": 25,
+      "merged": 156,
+      "count_at_merge": 508,
+      "token": "us"
+    },
+    {
+      "left": 55,
+      "right": 58,
+      "merged": 157,
+      "count_at_merge": 507,
+      "token": ".\nthe "
+    },
+    {
+      "left": 55,
+      "right": 140,
+      "merged": 158,
+      "count_at_merge": 503,
+      "token": ".\nendoftext\n"
+    },
+    {
+      "left": 1,
+      "right": 12,
+      "merged": 159,
+      "count_at_merge": 502,
+      "token": " f"
+    },
+    {
+      "left": 13,
+      "right": 21,
+      "merged": 160,
+      "count_at_merge": 499,
+      "token": "go"
+    },
+    {
+      "left": 66,
+      "right": 11,
+      "merged": 161,
+      "count_at_merge": 494,
+      "token": "ome"
+    },
+    {
+      "left": 13,
+      "right": 11,
+      "merged": 162,
+      "count_at_merge": 489,
+      "token": "ge"
+    },
+    {
+      "left": 11,
+      "right": 82,
+      "merged": 163,
+      "count_at_merge": 487,
+      "token": "ever"
+    },
+    {
+      "left": 8,
+      "right": 21,
+      "merged": 164,
+      "count_at_merge": 485,
+      "token": "bo"
+    },
+    {
+      "left": 27,
+      "right": 24,
+      "merged": 165,
+      "count_at_merge": 478,
+      "token": "ur"
+    },
+    {
+      "left": 51,
+      "right": 44,
+      "merged": 166,
+      "count_at_merge": 473,
+      "token": "ound "
+    },
+    {
+      "left": 19,
+      "right": 66,
+      "merged": 167,
+      "count_at_merge": 472,
+      "token": "mom"
+    },
+    {
+      "left": 109,
+      "right": 49,
+      "merged": 168,
+      "count_at_merge": 472,
+      "token": " they "
+    },
+    {
+      "left": 7,
+      "right": 18,
+      "merged": 169,
+      "count_at_merge": 466,
+      "token": "al"
+    },
+    {
+      "left": 45,
+      "right": 20,
+      "merged": 170,
+      "count_at_merge": 465,
+      "token": "wan"
+    },
+    {
+      "left": 24,
+      "right": 21,
+      "merged": 171,
+      "count_at_merge": 463,
+      "token": "ro"
+    },
+    {
+      "left": 20,
+      "right": 21,
+      "merged": 172,
+      "count_at_merge": 463,
+      "token": "no"
+    },
+    {
+      "left": 80,
+      "right": 21,
+      "merged": 173,
+      "count_at_merge": 463,
+      "token": "loo"
+    },
+    {
+      "left": 52,
+      "right": 151,
+      "merged": 174,
+      "count_at_merge": 462,
+      "token": "once "
+    },
+    {
+      "left": 7,
+      "right": 61,
+      "merged": 175,
+      "count_at_merge": 457,
+      "token": "all"
+    },
+    {
+      "left": 11,
+      "right": 57,
+      "merged": 176,
+      "count_at_merge": 455,
+      "token": "ear"
+    },
+    {
+      "left": 46,
+      "right": 50,
+      "merged": 177,
+      "count_at_merge": 453,
+      "token": "to the "
+    },
+    {
+      "left": 11,
+      "right": 4,
+      "merged": 178,
+      "count_at_merge": 447,
+      "token": "e,"
+    },
+    {
+      "left": 60,
+      "right": 1,
+      "merged": 179,
+      "count_at_merge": 443,
+      "token": "an "
+    },
+    {
+      "left": 15,
+      "right": 34,
+      "merged": 180,
+      "count_at_merge": 442,
+      "token": "id "
+    },
+    {
+      "left": 12,
+      "right": 27,
+      "merged": 181,
+      "count_at_merge": 440,
+      "token": "fu"
+    },
+    {
+      "left": 94,
+      "right": 63,
+      "merged": 182,
+      "count_at_merge": 431,
+      "token": "ere was"
+    },
+    {
+      "left": 14,
+      "right": 99,
+      "merged": 183,
+      "count_at_merge": 430,
+      "token": "had "
+    },
+    {
+      "left": 48,
+      "right": 1,
+      "merged": 184,
+      "count_at_merge": 430,
+      "token": "en "
+    },
+    {
+      "left": 43,
+      "right": 103,
+      "merged": 185,
+      "count_at_merge": 428,
+      "token": " his "
+    },
+    {
+      "left": 40,
+      "right": 81,
+      "merged": 186,
+      "count_at_merge": 426,
+      "token": " that "
+    },
+    {
+      "left": 33,
+      "right": 77,
+      "merged": 187,
+      "count_at_merge": 425,
+      "token": "e and "
+    },
+    {
+      "left": 25,
+      "right": 54,
+      "merged": 188,
+      "count_at_merge": 424,
+      "token": "she "
+    },
+    {
+      "left": 18,
+      "right": 31,
+      "merged": 189,
+      "count_at_merge": 423,
+      "token": "ly"
+    },
+    {
+      "left": 35,
+      "right": 11,
+      "merged": 190,
+      "count_at_merge": 418,
+      "token": "the"
+    },
+    {
+      "left": 14,
+      "right": 75,
+      "merged": 191,
+      "count_at_merge": 417,
+      "token": "her "
+    },
+    {
+      "left": 43,
+      "right": 75,
+      "merged": 192,
+      "count_at_merge": 416,
+      "token": " her "
+    },
+    {
+      "left": 36,
+      "right": 59,
+      "merged": 193,
+      "count_at_merge": 413,
+      "token": " a b"
+    },
+    {
+      "left": 59,
+      "right": 128,
+      "merged": 194,
+      "count_at_merge": 408,
+      "token": " but "
+    },
+    {
+      "left": 48,
+      "right": 26,
+      "merged": 195,
+      "count_at_merge": 407,
+      "token": "ent"
+    },
+    {
+      "left": 2,
+      "right": 0,
+      "merged": 196,
+      "count_at_merge": 403,
+      "token": "!\n"
+    },
+    {
+      "left": 52,
+      "right": 74,
+      "merged": 197,
+      "count_at_merge": 402,
+      "token": "on a "
+    },
+    {
+      "left": 48,
+      "right": 37,
+      "merged": 198,
+      "count_at_merge": 397,
+      "token": "ent "
+    },
+    {
+      "left": 43,
+      "right": 145,
+      "merged": 199,
+      "count_at_merge": 397,
+      "token": " happ"
+    },
+    {
+      "left": 29,
+      "right": 94,
+      "merged": 200,
+      "count_at_merge": 389,
+      "token": "were "
+    },
+    {
+      "left": 45,
+      "right": 31,
+      "merged": 201,
+      "count_at_merge": 389,
+      "token": "way"
+    },
+    {
+      "left": 16,
+      "right": 21,
+      "merged": 202,
+      "count_at_merge": 386,
+      "token": "jo"
+    },
+    {
+      "left": 3,
+      "right": 47,
+      "merged": 203,
+      "count_at_merge": 385,
+      "token": "'s "
+    },
+    {
+      "left": 158,
+      "right": 0,
+      "merged": 204,
+      "count_at_merge": 384,
+      "token": ".\nendoftext\n\n"
+    },
+    {
+      "left": 7,
+      "right": 10,
+      "merged": 205,
+      "count_at_merge": 383,
+      "token": "ad"
+    },
+    {
+      "left": 26,
+      "right": 38,
+      "merged": 206,
+      "count_at_merge": 381,
+      "token": "ter"
+    },
+    {
+      "left": 61,
+      "right": 1,
+      "merged": 207,
+      "count_at_merge": 380,
+      "token": "ll "
+    },
+    {
+      "left": 9,
+      "right": 57,
+      "merged": 208,
+      "count_at_merge": 378,
+      "token": "car"
+    },
+    {
+      "left": 3,
+      "right": 37,
+      "merged": 209,
+      "count_at_merge": 377,
+      "token": "'t "
+    },
+    {
+      "left": 170,
+      "right": 26,
+      "merged": 210,
+      "count_at_merge": 376,
+      "token": "want"
+    },
+    {
+      "left": 116,
+      "right": 197,
+      "merged": 211,
+      "count_at_merge": 375,
+      "token": "upon a "
+    },
+    {
+      "left": 12,
+      "right": 93,
+      "merged": 212,
+      "count_at_merge": 375,
+      "token": "fri"
+    },
+    {
+      "left": 117,
+      "right": 129,
+      "merged": 213,
+      "count_at_merge": 373,
+      "token": "one day"
+    },
+    {
+      "left": 174,
+      "right": 211,
+      "merged": 214,
+      "count_at_merge": 372,
+      "token": "once upon a "
+    },
+    {
+      "left": 214,
+      "right": 118,
+      "merged": 215,
+      "count_at_merge": 372,
+      "token": "once upon a tim"
+    },
+    {
+      "left": 27,
+      "right": 19,
+      "merged": 216,
+      "count_at_merge": 370,
+      "token": "um"
+    },
+    {
+      "left": 26,
+      "right": 7,
+      "merged": 217,
+      "count_at_merge": 361,
+      "token": "ta"
+    },
+    {
+      "left": 35,
+      "right": 38,
+      "merged": 218,
+      "count_at_merge": 357,
+      "token": "ther"
+    },
+    {
+      "left": 17,
+      "right": 11,
+      "merged": 219,
+      "count_at_merge": 353,
+      "token": "ke"
+    },
+    {
+      "left": 8,
+      "right": 11,
+      "merged": 220,
+      "count_at_merge": 352,
+      "token": "be"
+    },
+    {
+      "left": 155,
+      "right": 111,
+      "merged": 221,
+      "count_at_merge": 347,
+      "token": "girl "
+    },
+    {
+      "left": 13,
+      "right": 24,
+      "merged": 222,
+      "count_at_merge": 347,
+      "token": "gr"
+    },
+    {
+      "left": 41,
+      "right": 46,
+      "merged": 223,
+      "count_at_merge": 345,
+      "token": "ed to"
+    },
+    {
+      "left": 31,
+      "right": 53,
+      "merged": 224,
+      "count_at_merge": 342,
+      "token": "y and "
+    },
+    {
+      "left": 41,
+      "right": 58,
+      "merged": 225,
+      "count_at_merge": 340,
+      "token": "ed the "
+    },
+    {
+      "left": 67,
+      "right": 73,
+      "merged": 226,
+      "count_at_merge": 340,
+      "token": ". it "
+    },
+    {
+      "left": 95,
+      "right": 79,
+      "merged": 227,
+      "count_at_merge": 339,
+      "token": "said"
+    },
+    {
+      "left": 88,
+      "right": 17,
+      "merged": 228,
+      "count_at_merge": 339,
+      "token": "ack"
+    },
+    {
+      "left": 107,
+      "right": 86,
+      "merged": 229,
+      "count_at_merge": 334,
+      "token": "play"
+    },
+    {
+      "left": 51,
+      "right": 37,
+      "merged": 230,
+      "count_at_merge": 331,
+      "token": "out "
+    },
+    {
+      "left": 31,
+      "right": 39,
+      "merged": 231,
+      "count_at_merge": 328,
+      "token": "y s"
+    },
+    {
+      "left": 147,
+      "right": 33,
+      "merged": 232,
+      "count_at_merge": 326,
+      "token": "ave "
+    },
+    {
+      "left": 82,
+      "right": 49,
+      "merged": 233,
+      "count_at_merge": 321,
+      "token": "very "
+    },
+    {
+      "left": 39,
+      "right": 21,
+      "merged": 234,
+      "count_at_merge": 315,
+      "token": " so"
+    },
+    {
+      "left": 7,
+      "right": 49,
+      "merged": 235,
+      "count_at_merge": 313,
+      "token": "ay "
+    },
+    {
+      "left": 26,
+      "right": 24,
+      "merged": 236,
+      "count_at_merge": 311,
+      "token": "tr"
+    },
+    {
+      "left": 25,
+      "right": 14,
+      "merged": 237,
+      "count_at_merge": 309,
+      "token": "sh"
+    },
+    {
+      "left": 25,
+      "right": 11,
+      "merged": 238,
+      "count_at_merge": 306,
+      "token": "se"
+    },
+    {
+      "left": 36,
+      "right": 20,
+      "merged": 239,
+      "count_at_merge": 306,
+      "token": " an"
+    },
+    {
+      "left": 212,
+      "right": 90,
+      "merged": 240,
+      "count_at_merge": 305,
+      "token": "friend"
+    },
+    {
+      "left": 12,
+      "right": 24,
+      "merged": 241,
+      "count_at_merge": 305,
+      "token": "fr"
+    },
+    {
+      "left": 4,
+      "right": 50,
+      "merged": 242,
+      "count_at_merge": 303,
+      "token": ", the "
+    },
+    {
+      "left": 4,
+      "right": 53,
+      "merged": 243,
+      "count_at_merge": 303,
+      "token": ", and "
+    },
+    {
+      "left": 182,
+      "right": 74,
+      "merged": 244,
+      "count_at_merge": 302,
+      "token": "ere was a "
+    },
+    {
+      "left": 35,
+      "right": 81,
+      "merged": 245,
+      "count_at_merge": 302,
+      "token": "that "
+    },
+    {
+      "left": 14,
+      "right": 103,
+      "merged": 246,
+      "count_at_merge": 299,
+      "token": "his "
+    },
+    {
+      "left": 7,
+      "right": 27,
+      "merged": 247,
+      "count_at_merge": 294,
+      "token": "au"
+    },
+    {
+      "left": 1,
+      "right": 9,
+      "merged": 248,
+      "count_at_merge": 294,
+      "token": " c"
+    },
+    {
+      "left": 7,
+      "right": 8,
+      "merged": 249,
+      "count_at_merge": 291,
+      "token": "ab"
+    },
+    {
+      "left": 19,
+      "right": 15,
+      "merged": 250,
+      "count_at_merge": 288,
+      "token": "mi"
+    },
+    {
+      "left": 29,
+      "right": 146,
+      "merged": 251,
+      "count_at_merge": 285,
+      "token": "would "
+    },
+    {
+      "left": 66,
+      "right": 33,
+      "merged": 252,
+      "count_at_merge": 284,
+      "token": "ome "
+    },
+    {
+      "left": 87,
+      "right": 9,
+      "merged": 253,
+      "count_at_merge": 284,
+      "token": "exc"
+    },
+    {
+      "left": 19,
+      "right": 142,
+      "merged": 254,
+      "count_at_merge": 282,
+      "token": "mil"
+    },
+    {
+      "left": 43,
+      "right": 99,
+      "merged": 255,
+      "count_at_merge": 282,
+      "token": " had "
+    }
+  ]
+}

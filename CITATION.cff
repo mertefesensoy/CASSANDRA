@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Cassandra: a laptop-scale language-model formation lab"
+authors:
+  - family-names: "Sensoy"
+    given-names: "Mert Efe"
+type: software
+license: Apache-2.0
+date-released: "2026-07-21"
+version: "0.5.0"
+abstract: >-
+  A research workspace testing whether useful language-model behavior can
+  be formed by reducing brute-force gradient training through analytic
+  initialization, frozen priors, small trainable surfaces, verifier-guided
+  data, and measured training recipes. Every stage is recorded against an
+  honest baseline with falsifiable, pre-registered decision rules.

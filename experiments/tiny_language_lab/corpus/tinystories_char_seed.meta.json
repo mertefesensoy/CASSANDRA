@@ -1,0 +1,311 @@
+{
+  "alphabet": "abcdefghijklmnopqrstuvwxyz .,!?'\n",
+  "block_size_for_split_record": 256,
+  "generator": "make_tinystories_corpus.py",
+  "input_chars": 499616200,
+  "input_records": 1,
+  "normalization": [
+    "unicode NFKD",
+    "lowercase",
+    "unsupported characters mapped to space",
+    "space runs collapsed",
+    "blank-line runs capped at two newlines"
+  ],
+  "normalized_chars": 494094421,
+  "observed_counts": {
+    "\n": 3844898,
+    " ": 93710156,
+    "!": 872643,
+    "'": 1171587,
+    ",": 4500934,
+    ".": 9525321,
+    "?": 327839,
+    "a": 33750173,
+    "b": 6119308,
+    "c": 7227420,
+    "d": 21865920,
+    "e": 48232389,
+    "f": 6285511,
+    "g": 7282939,
+    "h": 25682504,
+    "i": 22300273,
+    "j": 758360,
+    "k": 4792782,
+    "l": 16323983,
+    "m": 10429638,
+    "n": 23721897,
+    "o": 27263161,
+    "p": 6966129,
+    "q": 150914,
+    "r": 17995002,
+    "s": 22385567,
+    "t": 35144425,
+    "u": 9361513,
+    "v": 2861095,
+    "w": 10137940,
+    "x": 1206195,
+    "y": 11609849,
+    "z": 286156
+  },
+  "observed_vocab": [
+    "\n",
+    " ",
+    "!",
+    "'",
+    ",",
+    ".",
+    "?",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z"
+  ],
+  "observed_vocab_size": 33,
+  "phase2_note": "character-level TinyStories prep; no pretrained checkpoint is loaded",
+  "shards": [
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00000.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00001.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00002.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00003.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00004.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00005.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00006.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00007.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00008.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00009.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00010.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00011.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00012.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00013.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00014.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00015.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00016.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00017.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00018.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00019.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00020.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00021.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00022.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00023.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00024.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00025.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00026.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00027.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00028.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00029.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00030.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00031.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00032.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00033.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00034.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00035.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00036.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00037.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00038.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00039.txt",
+      "split": "train"
+    },
+    {
+      "chars": 10000000,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00040.txt",
+      "split": "train"
+    },
+    {
+      "chars": 9980257,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\train_00041.txt",
+      "split": "train"
+    },
+    {
+      "chars": 74114164,
+      "path": "experiments\\tiny_language_lab\\corpus\\tinystories_char_shards_500mb\\val.txt",
+      "split": "val"
+    }
+  ],
+  "source_files": [
+    "C:\\Users\\senso\\OneDrive\\Masa\u00fcst\u00fc\\CASSANDRA\\experiments\\tiny_language_lab\\corpus\\tinystories_raw\\TinyStories-train.head500mb.txt"
+  ],
+  "split_protocol": "same deterministic prefix train and suffix validation split as cassandra_tiny_transformer.py",
+  "train_chars_at_recorded_block_size": 419980257,
+  "val_chars_at_recorded_block_size": 74114164,
+  "val_fraction": 0.15
+}

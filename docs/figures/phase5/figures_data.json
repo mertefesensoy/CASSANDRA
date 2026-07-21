@@ -1,0 +1,304 @@
+{
+  "primary_metric": "deterministic chunked text8 TEST bits/char",
+  "text8_results": {
+    "COLD": {
+      "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7.pt",
+      "step": 42000,
+      "bits_per_char": 1.3573176822147175,
+      "nll": 0.9408209245512913,
+      "chars_evaluated": 4999936,
+      "parameters": 85106721
+    },
+    "CURRICULUM": {
+      "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b42000_seed7_random_full_seed7.pt",
+      "step": 42000,
+      "bits_per_char": 1.3624141296719878,
+      "nll": 0.94435351273717,
+      "chars_evaluated": 4999936,
+      "parameters": 85106721
+    },
+    "MIXTURE": {
+      "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7.pt",
+      "step": 42000,
+      "bits_per_char": 1.3852951562123879,
+      "nll": 0.9602134317719657,
+      "chars_evaluated": 4999936,
+      "parameters": 85106721
+    }
+  },
+  "primary_delta_curriculum_minus_cold": 0.005096447457270337,
+  "seed7_primary_read": "E-null",
+  "secondary_deltas": {
+    "mixture_minus_cold": 0.027977473997670366,
+    "mixture_minus_curriculum": 0.02288102654040003
+  },
+  "retention_points": {
+    "COLD": [
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7_step005000.pt",
+        "step": 5000,
+        "bits_per_char": 3.6540456805651202,
+        "nll": 2.5327914611209597,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7_step010000.pt",
+        "step": 10000,
+        "bits_per_char": 3.7340578514033256,
+        "nll": 2.5882516717479422,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7_step015000.pt",
+        "step": 15000,
+        "bits_per_char": 3.8293763610475193,
+        "nll": 2.654321427962991,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7_step020000.pt",
+        "step": 20000,
+        "bits_per_char": 3.6457775773751924,
+        "nll": 2.5270604487062824,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7_step025000.pt",
+        "step": 25000,
+        "bits_per_char": 3.67287488134624,
+        "nll": 2.54584286855459,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7_step030000.pt",
+        "step": 30000,
+        "bits_per_char": 3.606769496476927,
+        "nll": 2.5000221074125957,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7_step035000.pt",
+        "step": 35000,
+        "bits_per_char": 3.561688328047779,
+        "nll": 2.4687742226195835,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7_step040000.pt",
+        "step": 40000,
+        "bits_per_char": 3.571101293003385,
+        "nll": 2.4752987927392716,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7.pt",
+        "step": 42000,
+        "bits_per_char": 3.5565022511216764,
+        "nll": 2.4651795080200887,
+        "chars_evaluated": 1499904
+      }
+    ],
+    "CURRICULUM": [
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase1_85m_b12500_seed7_random_full_seed7_step005000.pt",
+        "step": 5000,
+        "bits_per_char": 0.9934149094360685,
+        "nll": 0.6885827436018243,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase1_85m_b12500_seed7_random_full_seed7_step010000.pt",
+        "step": 10000,
+        "bits_per_char": 0.9034737073947231,
+        "nll": 0.6262402529906933,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase1_85m_b12500_seed7_random_full_seed7.pt",
+        "step": 12500,
+        "bits_per_char": 0.8777818987765136,
+        "nll": 0.6084320482834957,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b42000_seed7_random_full_seed7_step015000.pt",
+        "step": 15000,
+        "bits_per_char": 3.1887602135042132,
+        "nll": 2.210280151472175,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b42000_seed7_random_full_seed7_step020000.pt",
+        "step": 20000,
+        "bits_per_char": 3.428489103947639,
+        "nll": 2.376447555981799,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b42000_seed7_random_full_seed7_step025000.pt",
+        "step": 25000,
+        "bits_per_char": 3.548431085062712,
+        "nll": 2.4595850020224863,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b42000_seed7_random_full_seed7_step030000.pt",
+        "step": 30000,
+        "bits_per_char": 3.5533049553280476,
+        "nll": 2.4629633114553187,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b42000_seed7_random_full_seed7_step035000.pt",
+        "step": 35000,
+        "bits_per_char": 3.5539642458153438,
+        "nll": 2.463420296797758,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b42000_seed7_random_full_seed7_step040000.pt",
+        "step": 40000,
+        "bits_per_char": 3.5076997065357594,
+        "nll": 2.4313521618362093,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_curriculum_checkpoints\\stage58_dev_curriculum_phase2_85m_b42000_seed7_random_full_seed7.pt",
+        "step": 42000,
+        "bits_per_char": 3.5290689014459677,
+        "nll": 2.446164159039056,
+        "chars_evaluated": 1499904
+      }
+    ],
+    "MIXTURE": [
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7_step005000.pt",
+        "step": 5000,
+        "bits_per_char": 1.1702101154615787,
+        "nll": 0.8111278421949213,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7_step010000.pt",
+        "step": 10000,
+        "bits_per_char": 1.0618328349649457,
+        "nll": 0.7360064357819258,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7_step015000.pt",
+        "step": 15000,
+        "bits_per_char": 1.0049726582157672,
+        "nll": 0.6965939645820927,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7_step020000.pt",
+        "step": 20000,
+        "bits_per_char": 0.9620610194748875,
+        "nll": 0.666849883175645,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7_step025000.pt",
+        "step": 25000,
+        "bits_per_char": 0.9209608819943977,
+        "nll": 0.6383614387604173,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7_step030000.pt",
+        "step": 30000,
+        "bits_per_char": 0.8825764133583485,
+        "nll": 0.6117553525480481,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7_step035000.pt",
+        "step": 35000,
+        "bits_per_char": 0.8510251228905213,
+        "nll": 0.5898856645172459,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7_step040000.pt",
+        "step": 40000,
+        "bits_per_char": 0.8313265072759463,
+        "nll": 0.576231624643069,
+        "chars_evaluated": 1499904
+      },
+      {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_mixture_checkpoints\\stage58_dev_mixture_85m_b42000_seed7_random_full_seed7.pt",
+        "step": 42000,
+        "bits_per_char": 0.8262845616006874,
+        "nll": 0.5727368142137269,
+        "chars_evaluated": 1499904
+      }
+    ]
+  },
+  "phase5_arc": {
+    "phase4_flagship_zero_shot_bits_per_char": 2.8817021418518185,
+    "phase4_flagship_source": "C:\\Users\\senso\\OneDrive\\Masa\u00fcst\u00fc\\CASSANDRA\\docs\\figures\\phase4\\figures_data.json",
+    "stage56_recipe_v1_50k_seed7": {
+      "checkpoint": "C:\\cassandra_runs\\stage56_broadchar_checkpoints\\stage56_broadchar_85m_b50000_seed7_random_full_seed7_step050000.pt",
+      "step": 50000,
+      "bits_per_char": 1.4857395174164205,
+      "nll": 1.0298361575436856,
+      "chars_evaluated": 4999936,
+      "parameters": 85097499
+    },
+    "stage58_recipe_v2_cold_42k_seed7": {
+      "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b42000_seed7_random_full_seed7.pt",
+      "step": 42000,
+      "bits_per_char": 1.3573176822147175,
+      "nll": 0.9408209245512913,
+      "chars_evaluated": 4999936,
+      "parameters": 85106721
+    }
+  },
+  "recipe_matched_20k": {
+    "11": {
+      "stage56_recipe_v1": {
+        "checkpoint": "C:\\cassandra_runs\\stage56_broadchar_checkpoints\\stage56_broadchar_85m_b20000_seed11_random_full_seed11_step020000.pt",
+        "step": 20000,
+        "bits_per_char": 1.5326266298296818,
+        "nll": 1.062335827317535,
+        "chars_evaluated": 4999936,
+        "parameters": 85097499
+      },
+      "stage58_cold_recipe_v2": {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b20000_seed11_random_full_seed11.pt",
+        "step": 20000,
+        "bits_per_char": 1.410153858867071,
+        "nll": 0.9774441714294373,
+        "chars_evaluated": 4999936,
+        "parameters": 85106721
+      },
+      "v2_minus_v1_bits_per_char": -0.12247277096261078
+    },
+    "19": {
+      "stage56_recipe_v1": {
+        "checkpoint": "C:\\cassandra_runs\\stage56_broadchar_checkpoints\\stage56_broadchar_85m_b20000_seed19_random_full_seed19_step020000.pt",
+        "step": 20000,
+        "bits_per_char": 1.5295913857606565,
+        "nll": 1.0602319564487788,
+        "chars_evaluated": 4999936,
+        "parameters": 85097499
+      },
+      "stage58_cold_recipe_v2": {
+        "checkpoint": "C:\\cassandra_runs\\stage58_dev_cold_checkpoints\\stage58_dev_cold_85m_b20000_seed19_random_full_seed19.pt",
+        "step": 20000,
+        "bits_per_char": 1.4107794142838799,
+        "nll": 0.9778777734028824,
+        "chars_evaluated": 4999936,
+        "parameters": 85106721
+      },
+      "v2_minus_v1_bits_per_char": -0.11881197147677658
+    }
+  },
+  "figures": [
+    "fig1_stage58_text8_primary.png",
+    "fig2_stage58_tinystories_retention.png",
+    "fig4_phase5_arc_and_recipe.png"
+  ]
+}

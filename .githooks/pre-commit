@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+limit=$((50 * 1024 * 1024))
+tmp_file=$(mktemp)
+trap 'rm -f "$tmp_file"' EXIT
+
+git diff --cached --name-only --diff-filter=AM > "$tmp_file"
+
+while IFS= read -r path; do
+    [ -n "$path" ] || continue
+    size=$(git cat-file -s ":$path" 2>/dev/null || echo 0)
+    if [ "$size" -gt "$limit" ]; then
+        mib=$((size / 1024 / 1024))
+        echo "pre-commit: refusing staged file over 50 MiB: $path (${mib} MiB)" >&2
+        exit 1
+    fi
+done < "$tmp_file"
