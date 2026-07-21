@@ -9,7 +9,7 @@ Mechanistic interpretability shows that In-Context Learning (ICL) relies on acti
 The weight updates bias the model's internal representations (Function Vectors) toward the new domain. This "Function Vector Shift" actively derails or overwrites the precise internal attention routing required for ICL. Thus, a model can improve its general negative log-likelihood (NLL) on a broad dataset while suffering a total structural collapse of its copy/reasoning circuits. Supervised Fine-Tuning is specifically known to cause severe disruption to these base structural circuits compared to Reinforcement Learning.
 
 ## Direct Relevance to Cassandra
-Stage 58 / H026 produced a massive behavioral divergence: the Phase 1 model (Part 0, trained only on simple data) scored 0.194 on the zero-shot copy probe. The final flagship model (trained further on text8) scored 0.061 on the identical probe—a collapse down to random chance. This proves that the transition to broad data structurally destroyed the emergent copy circuit, despite NLL improvements.
+Stage 58 / H026 produced a massive behavioral divergence: the Phase 1 model (Part 0, trained only on simple data) scored 0.194 on the zero-shot copy probe. The final flagship model (trained further on text8) scored 0.061 on the identical probe · a collapse down to random chance. This proves that the transition to broad data structurally destroyed the emergent copy circuit, despite NLL improvements.
 
 ## Roadmap & Experiment Change
 **Hypothesis formulation for Phase 7 (Intake decision)**: I highly recommend prioritizing **H026: The Behavior Axis**. 
