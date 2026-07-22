@@ -115,6 +115,46 @@ as ADR 0017's implementation status already records.
    char model, for the possible post-Stage-60 mechanistic follow-up; and
    the note-12 revision acknowledging the corrected evidence reading.
 
+## Implementation status (updated 2026-07-23)
+
+Implementation: Stage 61 training and instrumentation COMPLETE. All
+50,000 steps ran (Codex through step 40,000, Claude's continuation for
+the remaining 10,000 after Codex's session ran out of budget; full
+handoff record in
+`runs/stage61_pure_broad_200m_seed7_pitstop_20260722.md`, closeout entry
+in `RESULTS.md`). All ten checkpoint rungs (5k through 50k) carry
+complete letters-probe and TinyStories-retention instrumentation rows.
+
+D5 bars, read in precedence order: (a) deterministic text8 TEST
+`1.336059` bits/char, strictly below the `1.357318` 85M COLD anchor by
+`0.021259`, about seven times the known `0.003035` between-seed noise
+floor. PASS. (b) Instrumentation complete for all ten step-numbered
+checkpoints plus the true final. PASS. (c) The user's sample review is
+OUTSTANDING; the formal 8-prompt review sheet
+(`runs/stage61_user_samples.md`) has been surfaced. **Stage 61 is
+publish-worthy pending only (c).** No packaging step proceeds before it
+resolves.
+
+Correction, 2026-07-23: a canonical, complete, dedicated Stage 61
+launcher (`run_stage61_visible.ps1` plus four companion scripts) was
+found on disk, untracked in git; nothing was ever lost from
+`run_phase6_visible.ps1` as first assumed during the continuation
+handoff. Because Claude's continuation ran one 10,000-step segment
+instead of two 5,000-step segments, the canonical
+`make_stage61_publish_bars.py` verifier cannot run against the resulting
+9-row ladder (fails on a row-count check alone); the bars above were
+confirmed by hand against the same artifacts and thresholds. Full detail
+in `runs/stage61_pure_broad_200m_seed7_pitstop_20260722.md`'s correction
+addendum and `runs/stage61_publish_bars.json`. No science number
+changed: the two candidate final checkpoints (the unsuffixed final and
+`step050000.pt`) produced bit-identical deterministic text8 TEST output.
+
+Descriptive, not a D5 bar: the complete letters-probe curve across all
+ten rungs never crosses the `0.1625` PRESENT line (stays in `0.072` to
+`0.144`, noisily, no trend toward formation even at 50,000 steps). This
+feeds H026's read-back as a data point about size and budget, not a
+Stage 61 gate.
+
 ## Scope and what this decision does not claim
 
 - Nothing here reopens the dose axis (E-partial stands), the ordering

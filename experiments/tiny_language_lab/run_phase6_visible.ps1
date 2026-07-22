@@ -13,7 +13,10 @@ param(
         "stage59-verdict",
         "stage59-seed7-cold-arm",
         "stage59-seed7-cold-eval",
-        "stage59-seed7-majority-verdict"
+        "stage59-seed7-majority-verdict",
+        "stage60-circuit-matrix",
+        "stage60-circuit-matrix-analysis",
+        "stage61-arm-segment"
     )]
     [string]$Mode = "stage59-proxy-smoke",
     [int]$Budget = 200,
@@ -587,7 +590,89 @@ $KeepArgs = @(
 Start-Process -FilePath "powershell.exe" -ArgumentList $KeepArgs -WindowStyle Hidden | Out-Null
 Write-LauncherLog "[visible] keep_awake_log=$KeepAwakeLog watch_pid=$PID"
 
-if ($Mode -eq "stage59-smoke-prep") {
+if ($Mode -eq "stage60-circuit-matrix") {
+    $MatrixOut = Join-Path $RunDir "stage60_circuit_matrix.jsonl"
+    $MatrixSummary = Join-Path $RunDir "stage60_circuit_matrix.md"
+    $InventoryOut = Join-Path $RunDir "stage60_circuit_inventory.json"
+    $PayloadOut = Join-Path $RunDir "stage60_circuit_matrix.payload.json"
+    $ProbeDir = Join-Path $RunDir "stage60_probe_rows"
+    foreach ($Path in @($MatrixOut, $MatrixSummary, $InventoryOut, $PayloadOut, $ProbeDir)) {
+        if (Test-Path -LiteralPath $Path) {
+            throw "Refusing to overwrite existing Stage 60 circuit-matrix evidence: $Path"
+        }
+    }
+    Assert-GpuIdleForLaunch
+    Assert-MusahitWindowReady -ExpectedHours 1.0 -Label "stage60_h026_circuit_matrix"
+    $RunArgs = @(
+        ".\experiments\tiny_language_lab\make_stage60_circuit_matrix.py",
+        "--device", "cuda",
+        "--out", $MatrixOut,
+        "--summary", $MatrixSummary,
+        "--inventory-out", $InventoryOut,
+        "--probe-dir", $ProbeDir
+    )
+    Invoke-VisiblePython -Label "stage60_h026_circuit_matrix" -RunArgs $RunArgs
+    foreach ($Path in @($MatrixOut, $MatrixSummary, $InventoryOut, $PayloadOut)) {
+        if (-not (Test-Path -LiteralPath $Path) -or (Get-Item -LiteralPath $Path).Length -le 0) {
+            throw "Stage 60 required output missing or empty: $Path"
+        }
+    }
+    $Rows = @(Get-Content -LiteralPath $MatrixOut | Where-Object { $_.Trim() -ne "" } | ForEach-Object { $_ | ConvertFrom-Json })
+    if ($Rows.Count -ne 82) {
+        throw "Stage 60 matrix must preserve exactly 82 frozen inventory rows, found $($Rows.Count)"
+    }
+    $Anchor = $Rows[0]
+    if ($Anchor.checkpoint_name -ne "stage58_dev_cold_85m_b42000_seed7_random_full_seed7.pt" -or
+        $Anchor.status -ne "scored" -or [math]::Abs([double]$Anchor.choice_accuracy - 0.194336) -gt 0.0000005) {
+        throw "Stage 60 deterministic anchor did not exactly reproduce 0.194336"
+    }
+    $HashMismatches = @($Rows | Where-Object { $_.status -eq "hash_mismatch_excluded" })
+    $ProbeErrors = @($Rows | Where-Object { $_.status -eq "probe_error" })
+    Write-LauncherLog "[verified] stage60_rows=$($Rows.Count) anchor_choice_accuracy=$($Anchor.choice_accuracy) hash_mismatch_excluded=$($HashMismatches.Count) probe_error_rows=$($ProbeErrors.Count)"
+}
+elseif ($Mode -eq "stage60-circuit-matrix-analysis") {
+    $MatrixOut = Join-Path $RunDir "stage60_circuit_matrix.jsonl"
+    $AnalysisOut = Join-Path $RunDir "stage60_circuit_matrix_analysis.json"
+    $AnalysisSummary = Join-Path $RunDir "stage60_circuit_matrix_analysis.md"
+    if (-not (Test-Path -LiteralPath $MatrixOut)) {
+        throw "Stage 60 corrected analysis requires the preserved completed matrix: $MatrixOut"
+    }
+    $ExistingAnalysis = @((Test-Path -LiteralPath $AnalysisOut), (Test-Path -LiteralPath $AnalysisSummary))
+    if ($ExistingAnalysis -contains $true -and $ExistingAnalysis -contains $false) {
+        throw "Stage 60 corrected-analysis evidence is partial; preserve it and inspect before any recovery"
+    }
+    Assert-GpuIdleForLaunch
+    if ($ExistingAnalysis -contains $false) {
+        $RunArgs = @(
+            ".\experiments\tiny_language_lab\make_stage60_circuit_matrix.py",
+            "--analysis-from", $MatrixOut,
+            "--analysis-out", $AnalysisOut,
+            "--analysis-summary", $AnalysisSummary
+        )
+        Invoke-VisiblePython -Label "stage60_h026_corrected_analysis" -RunArgs $RunArgs
+    }
+    else {
+        Write-LauncherLog "[recovery] revalidating existing corrected analysis without overwriting evidence"
+    }
+    foreach ($Path in @($AnalysisOut, $AnalysisSummary)) {
+        if (-not (Test-Path -LiteralPath $Path) -or (Get-Item -LiteralPath $Path).Length -le 0) {
+            throw "Stage 60 corrected-analysis output missing or empty: $Path"
+        }
+    }
+    $Analysis = Get-Content -Raw -LiteralPath $AnalysisOut | ConvertFrom-Json
+    $MatrixSha256 = (Get-FileHash -LiteralPath $MatrixOut -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ([string]$Analysis.analysis_input_sha256 -ne $MatrixSha256 -or
+        [IO.Path]::GetFullPath([string]$Analysis.analysis_input) -ne [IO.Path]::GetFullPath($MatrixOut)) {
+        throw "Stage 60 corrected analysis is not bound to the preserved matrix input"
+    }
+    if ($Analysis.verdict.decision_line -ne "E-gray" -or
+        [math]::Abs([double]$Analysis.anchor.choice_accuracy - 0.194336) -gt 0.0000005 -or
+        $null -eq $Analysis.verdict.seed7_domain_shift_accuracy_gain) {
+        throw "Stage 60 corrected analysis failed its fixed-input verdict, anchor, or terminal-final checks"
+    }
+    Write-LauncherLog "[verified] stage60_corrected_analysis=true decision_line=$($Analysis.verdict.decision_line) phase2_gain=$($Analysis.verdict.seed7_domain_shift_accuracy_gain) matrix_sha256=$MatrixSha256"
+}
+elseif ($Mode -eq "stage59-smoke-prep") {
     if ($SmokeTotalChars -le 0) {
         throw "-SmokeTotalChars must be positive"
     }
@@ -1066,6 +1151,92 @@ elseif ($Mode -eq "stage59-seed7-majority-verdict") {
         "--summary", $VerdictSummary
     )
     Invoke-VisiblePython -Label "stage59_h025_seed7_majority_verdict" -RunArgs $RunArgs
+}
+elseif ($Mode -eq "stage61-arm-segment") {
+    # 2026-07-22: reconstructed by Claude after Codex's session ran out of
+    # budget mid-flight. The stage61 launcher modes Codex used to reach
+    # step 40,000 were not present in the working tree when this handoff
+    # began (see runs/stage61_pure_broad_200m_seed7_pitstop_20260722.md).
+    # This block reuses the file's existing, already-audited gate helpers
+    # and reproduces the training command verbatim from
+    # runs/phase6_stage61-arm-segment_20260722_201331_launcher.log, only
+    # substituting -Budget and -ResumeFrom for the next segment.
+    if ($Budget -le 0 -or $Budget % 5000 -ne 0) {
+        throw "Stage 61 arm segments must be a positive multiple of 5,000 steps"
+    }
+    if ($ResumeFrom -eq "") {
+        throw "Stage 61 arm segments require -ResumeFrom pointing at the last durable checkpoint"
+    }
+    if (-not (Test-Path -LiteralPath $ResumeFrom)) {
+        throw "Stage 61 resume checkpoint does not exist: $ResumeFrom"
+    }
+    $Stage61CheckpointPrefix = "stage61_pure_broad_200m_seed7_random_full_seed7"
+    if ((Split-Path -Leaf $ResumeFrom) -notlike "$Stage61CheckpointPrefix*.pt") {
+        throw "Resume checkpoint does not match the registered Stage 61 pure-broad seed-7 lineage"
+    }
+    if (-not (Test-Path -LiteralPath $UnionVocab)) {
+        throw "Missing registered 33-character union vocabulary: $UnionVocab"
+    }
+    $Stage61CheckpointDir = "C:\cassandra_runs\stage61_pure_broad_200m_checkpoints"
+    $Stage61Out = Join-Path $RunDir "stage61_pure_broad_200m_seed7.jsonl"
+    $Stage61Summary = Join-Path $RunDir "stage61_pure_broad_200m_seed7.md"
+    Assert-GpuIdleForLaunch
+    $ExpectedHours = [double]$Budget * 1.079669 / 3600.0
+    Assert-MusahitWindowReady -ExpectedHours $ExpectedHours -Label "stage61_pure_broad_segment"
+    Assert-CheckpointWriteReady -CheckpointDir $Stage61CheckpointDir
+    $RunArgs = @(
+        ".\experiments\tiny_language_lab\cassandra_compare.py",
+        "--corpus", $Text8Corpus,
+        "--device", "cuda",
+        "--steps", [string]$Budget,
+        "--eval-interval", "5000",
+        "--log-every", "1000",
+        "--seeds", "7",
+        "--configs", "random_full",
+        "--block-size", "256",
+        "--batch-size", "8",
+        "--grad-accum-steps", "2",
+        "--pos-encoding", "rope",
+        "--activation-checkpoint",
+        "--optimizer", "muon",
+        "--muon-lr", "0.01",
+        "--precision", "fp32",
+        "--lr-schedule", "cosine",
+        "--lr-final-frac", "0.1",
+        "--lr-total-steps", "50000",
+        "--vocab-chars-file", $UnionVocab,
+        "--eval-mode", "sampled",
+        "--eval-batches", "16",
+        "--no-copy-train-marker",
+        "--prompt", "the history of ",
+        "--max-new-tokens", "240",
+        "--n-layer", "16",
+        "--n-head", "16",
+        "--n-embd", "1024",
+        "--train-shard-dir", $BroadShardDir,
+        "--stream-train-eval-chars", "200000",
+        "--val-fraction", "0.05263157894736842",
+        "--out", $Stage61Out,
+        "--summary", $Stage61Summary,
+        "--title", "Stage 61 pure-broad Recipe v2",
+        "--checkpoint-dir", $Stage61CheckpointDir,
+        "--checkpoint-every", "5000",
+        "--checkpoint-keep", "12",
+        "--append",
+        "--resume-from", $ResumeFrom,
+        "--resume-steps-additional"
+    )
+    Invoke-VisiblePython -Label "stage61_pure_broad_segment" -RunArgs $RunArgs
+    $InstArgs = @(
+        ".\experiments\tiny_language_lab\make_stage61_instrumentation.py",
+        "--checkpoint-dir", $Stage61CheckpointDir,
+        "--prefix", $Stage61CheckpointPrefix,
+        "--jsonl", (Join-Path $RunDir "stage61_instrumentation.jsonl"),
+        "--summary", (Join-Path $RunDir "stage61_instrumentation.md"),
+        "--minimum-age-seconds", "0"
+    )
+    Invoke-VisiblePython -Label "stage61_instrumentation" -RunArgs $InstArgs
+    Write-LauncherLog "[verified] stage61_arm_segment_budget=$Budget resume_from=$ResumeFrom"
 }
 Write-LauncherLog "[visible] launcher_end=$(Get-Date -Format o) status=success"
 if ($KeepOpen) {

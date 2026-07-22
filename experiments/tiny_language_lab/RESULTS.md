@@ -6476,3 +6476,527 @@ the required Claude read-back is a closeout handoff, not permission to scale.
 Durable evidence: `runs/stage59_verdict.json`, `runs/stage59_verdict.md`, and
 `runs/phase6_stage59-verdict_20260721_235446_launcher.log`, with all paired
 Part 2 training and deterministic evaluation sources cited inside the verdict.
+## Stage 60 H026 Frozen Circuit Matrix
+
+Date: 2026-07-22 local
+
+Stage 60 executed H026 as an eval-only checkpoint map. It trained no model. The
+visible launcher completed successfully after 18 minutes and preserved a frozen
+82-row inventory: 68 Stage 58 checkpoints, 10 Stage 59 checkpoints, and four
+Stage 56 Recipe v1 compatibility attempts. The command was:
+
+```powershell
+.\experiments\tiny_language_lab\run_phase6_visible.ps1 -Mode stage60-circuit-matrix
+```
+
+The frozen probe was the H025 Part 0 file with `--lines 1024`,
+`--seed 20260709`, and `--max-cases 1024`. Its on-disk byte SHA-256 was
+`34d8b6c9e41e508fb1668bf7632f3b9fb3edae62b17ccbe0329886c2398b8c71`.
+The corpus metadata's `cf5e...` value is the normalized LF text hash generated
+before Windows writes CRLF bytes; the Stage 60 row hash and the prior Stage 59
+record use the actual on-disk byte hash. The first row exactly reproduced the
+registered anchor: constrained-choice accuracy `0.194336`, choice MRR
+`0.401049`, and NLL `2.774850`.
+
+The wrapper verified all 20 previously recorded Stage 58 checkpoint hashes,
+recorded 62 surviving rungs as `hash_unverified` where no earlier checkpoint
+hash existed, and found zero hash mismatches. It scored 78 compatible rows with
+finite required metrics. The four Stage 56 rows were attempted and preserved as
+expected `ValueError` compatibility rows because the 27-character codec lacks
+the frozen probe's newline, comma, and period. No probe text was adapted.
+
+| Required H026 read | Result |
+| --- | --- |
+| TinyStories-only seed 7, 5k / 10k / 12.5k | 0.080078 / 0.057617 / 0.069336, all ABSENT |
+| TinyStories-only seed 11, 5k / 5,952 | 0.091797 ABSENT / 0.113281 GRAY |
+| TinyStories-only seed 19, 1k through 5,952 | 0.057617 to 0.111328, all ABSENT |
+| COLD seed 7 onset | first surviving PRESENT at 35,000, 0.531250; final 0.194336 PRESENT |
+| CURRICULUM seed 7 terminal domain shift | phase-1 final 0.069336 ABSENT; terminal 42,000-step phase-2 final 0.222656 PRESENT; gain +0.153320 |
+| COLD seed 11 / 19 finals | 0.133789 GRAY / 0.072266 ABSENT |
+| Stage 58 MIXTURE seed 7 | PRESENT at 15k and 20k, then ABSENT from 25k through final |
+| Stage 59 `w=0.10` finals, seed 11 / 19 | 0.098633 ABSENT / 0.062500 ABSENT |
+
+H026's primary partition is **E-gray (INCONCLUSIVE)**. E-steps does not fire:
+none of the 11 TinyStories-only rows is PRESENT. E-diverse cannot fire because
+the seed-11 5,952-step TinyStories-only final is GRAY, even though the seed-7
+COLD ladder reaches PRESENT and the seed-7 domain-shift terminal-final clause
+passes. This result is scoped to the frozen identity-copy probe family. It does
+not establish or reject a general reasoning capability.
+
+The descriptive screening reads found four within-lineage choice-accuracy drops
+at or above 0.05: COLD seed 7 from 5k to 10k and 35k to 40k, Stage 58 MIXTURE
+seed 7 from 20k to 25k, and Stage 59 `w=0.10` seed 11 from 5k to 10k. They are
+candidate destruction events only and authorize no intervention under the
+eval-only boundary.
+
+One post-run audit correction is preserved separately. The initial matrix
+analysis treated the retained seed-7 `b12501` phase-2 resume smoke as a second
+unsuffixed final, which left the terminal domain-shift gain unset. The matrix
+rows, original JSONL, and original Markdown were not overwritten. The corrected
+analysis selects the highest-global-step unsuffixed phase-2 checkpoint, binds to
+matrix SHA-256
+`d75d7a237d6dd536c0f069daa01cde176ffb0cc90b3ddb490baafe70213bb8f4`,
+and reproduces E-gray with the +0.153320 terminal gain. Its first visible
+launcher preserves a post-Python launcher-closeout failure; the Python analysis
+itself exited zero, and a subsequent Windows PowerShell read-only revalidation
+confirmed the input hash, anchor, terminal final, gain, and E-gray result.
+
+Durable artifacts: `runs/stage60_circuit_inventory.json`,
+`runs/stage60_circuit_matrix.jsonl`, `runs/stage60_circuit_matrix.payload.json`,
+`runs/stage60_circuit_matrix.md`, `runs/stage60_circuit_matrix_analysis.json`,
+`runs/stage60_circuit_matrix_analysis.md`, `runs/stage60_probe_rows/`, and
+`runs/phase6_stage60-circuit-matrix_20260722_031933_launcher.log`.
+
+## Stage 61 Recipe v2 200M Size Gate
+
+Date: 2026-07-22 local
+
+Stage 61 uses ADR 0018's pure-broad Recipe v2 surface: pure text8 train
+shards, 33-character union vocabulary, `L=16`, `H=16`, `D=1024`, block 256,
+RoPE, activation checkpointing, Muon at `0.01`, fp32, and cosine warmdown to
+`0.1`. The 20-step visible size gate produced exactly `201,609,249`
+parameters, so the Stage 55 sizing lineage is preserved.
+
+| Gate quantity | Measured value |
+| --- | ---: |
+| Parameters | 201,609,249 |
+| Formation steps / forward passes | 20 / 40 |
+| Peak CUDA allocation | 2,705.9492 MiB |
+| GPU total allocation reported by `nvidia-smi` | 8,188 MiB |
+| Sampled text8 validation NLL / bits | 2.526151 / 3.644465 |
+| Elapsed seconds | 47.9176 |
+
+The exact output row is `runs/stage61_size_gate.jsonl`, with its summary in
+`runs/stage61_size_gate.md`. The initial visible training launcher wrote the
+valid row, then exposed a Windows PowerShell-only `nvidia-smi` post-check
+handling defect. The evidence was preserved rather than rerun. After that
+launcher was fixed, a second visible launcher revalidated the same immutable
+row and finished with status `success`, confirming more than 1 GiB of CUDA
+headroom. The source and successful-revalidation logs are
+`runs/phase6_stage61-size-gate_20260722_040240.log` and
+`runs/phase6_stage61-size-gate_20260722_040457_launcher.log`.
+
+The sustained, checkpoint-writing 5,000-step throughput measurement is the
+next gate. Its row and SHA-bound budget artifact must exist before the resume
+drill or any Stage 61 arm is eligible to launch.
+
+## Stage 61 Throughput Gate and Resume Drill
+
+Date: 2026-07-22 local
+
+The one-row, 5,000-step pure-text8 throughput measurement completed under the
+registered Recipe v2 surface. It has exactly `201,609,249` parameters,
+finite required metrics, Muon `0.01` recorded in `optimizer_report`, fp32,
+cosine `lr_final_frac=0.1`, and no copy-training marker. Both required
+throughput checkpoint forms are nonempty:
+`C:\cassandra_runs\stage61_throughput_checkpoints\stage61_throughput_random_full_seed7.pt`
+and its `_step005000.pt` rung.
+
+| Throughput quantity | Measured value |
+| --- | ---: |
+| Elapsed seconds | 5,398.3454 |
+| Seconds per step | 1.079669080 |
+| Sampled validation NLL / bits | 1.056650 / 1.524423 |
+| Peak CUDA allocation | 2,705.9492 MiB |
+| Bound row SHA-256 | `3140fb55f9957a03c5484db9a9400c0726502354f921d8b8c9413fca827e9ddc` |
+| Projected 30k / 50k GPU-hours | 8.997242 / 14.995404 |
+
+The original launcher preserved a post-training validation failure because its
+new verifier incorrectly looked for a top-level `muon_lr` key. The immutable
+row correctly stores that value at `optimizer_report.muon_lr`. The verifier,
+budget tool, and final publication verifier were corrected to inspect the
+serialized Muon optimizer report; no model, throughput row, or checkpoint was
+overwritten. The repaired budget artifact is SHA-bound to the row above and
+is `CLEARED` at the registered maximum target of **50,000 steps**.
+
+The visible 200+200-step resume drill then completed successfully. Its initial
+row ended at formation step 200 in 237.6433 seconds. Its resumed row loaded
+the exact step-200 checkpoint, has `resume_loaded=true`, `resume_step=200`,
+and ended at formation step 400 in 238.8414 seconds. Both rows retain the
+50,000-step cosine schedule, all Recipe v2 fields, finite metrics, and
+Muon `0.01` in their optimizer reports. The four exact initial/resumed,
+unsuffixed/step checkpoint artifacts are nonempty under
+`C:\cassandra_runs\stage61_resume_drill_checkpoints`.
+
+Durable evidence: `runs/stage61_throughput.jsonl`,
+`runs/stage61_throughput.md`, `runs/stage61_throughput_gate.json`,
+`runs/stage61_throughput_gate.md`,
+`runs/stage61_resume_drill_initial.jsonl`,
+`runs/stage61_resume_drill_resumed.jsonl`, and visible logs
+`runs/phase6_stage61-throughput_20260722_040626_launcher.log` and
+`runs/phase6_stage61-resume-drill_20260722_053908_launcher.log`.
+
+## Stage 61 Pure-Broad Ladder, Seed 7
+
+Date: 2026-07-22 local
+
+The first instrumented pure-text8 rung, formation step 5,000, completed under
+the registered Recipe v2 surface. Exactly one seed-7 row records 16 layers,
+16 heads, width 1,024, 33-character vocabulary, RoPE, activation
+checkpointing, batch 8 with gradient accumulation 2, fp32 Muon at `0.01`, and
+the 50,000-step cosine horizon with `lr_final_frac=0.1`. It has exactly
+`201,609,249` total and trainable parameters, `formation_forward_passes=10000`,
+finite metrics, and no resume source.
+
+| 5k rung quantity | Measured value |
+| --- | ---: |
+| Sampled validation NLL / bits | 1.154025 / 1.664907 |
+| Training elapsed seconds | 5,330.6 |
+| Frozen letters choice accuracy / MRR | 0.084961 / 0.268454 |
+| TinyStories retention bpc / NLL | 3.674017 / 2.546634 |
+| Frozen probe cases | 1,024 |
+| Retention characters | 1,499,904 |
+
+The exact unsuffixed plus 5k ladder pair is nonempty under
+`C:\cassandra_runs\stage61_pure_broad_200m_checkpoints`:
+`stage61_pure_broad_200m_seed7_random_full_seed7.pt` (SHA-256
+`d62facde9e5a2f93e4575f8aeef0bfa2a544e39763af656e523fe8258afc38a7`) and
+`stage61_pure_broad_200m_seed7_random_full_seed7_step005000.pt` (SHA-256
+`6ddaeb8b7291b68ee8b5614781e7a63e34fcca36786526a4b68b17f28e036bd8`).
+The instrumentation row is complete and binds its letters and retention
+artifacts to the latter SHA-256. The visible launcher completed successfully:
+`runs/phase6_stage61-arm-segment_20260722_055049_launcher.log`.
+
+Durable artifacts: `runs/stage61_pure_broad_200m_seed7.jsonl`,
+`runs/stage61_pure_broad_200m_seed7.md`, `runs/stage61_instrumentation.jsonl`,
+`runs/stage61_instrumentation.md`, and `runs/stage61_instrumentation_rows/`.
+
+### 10k resumed rung
+
+The second row resumes the SHA-bound 5k checkpoint and ends at formation step
+10,000. It retains the exact Recipe v2 surface and records
+`resume_loaded=true`, `resume_step=5000`, `steps=5000`, and
+`formation_forward_passes=20000`. Its sampled validation NLL / bits is
+`1.054507 / 1.521332`; frozen letters choice accuracy / MRR is
+`0.083984 / 0.242289`; and TinyStories retention is `3.797625` bpc over the
+registered 1,499,904 characters. All required metrics are finite, the
+instrumentation row is complete over 1,024 probe cases, and its checkpoint
+SHA-256 is `88b34709ce56163bf243a8677dc57de2a0f4f29dc634ab909145abd7930c1c5e`.
+
+The exact unsuffixed checkpoint was advanced to 10k (SHA-256
+`3e31a1c756d6b7b7c168c28874c43cdb57d18ace20ae7f3a89a0a278bdbe11dd`) and
+the nonempty `step010000` rung joins the retained `step005000` rung. This
+resumed segment took `7,249.4386` seconds, materially slower than the
+5,398.3454-second throughput gate. The worker stayed live, responsive, and
+GPU-active throughout the delayed logs; no recovery was applied. Because the
+remaining-ladder projection could now cross 02:00, the verified MÜŞAHİT
+one-shot guard received `SKIP_NEXT_RUN.flag` at
+`C:\Users\senso\OneDrive\Masaüstü\MÜŞAHİT\scripts\scheduling\SKIP_NEXT_RUN.flag`.
+
+### 15k resumed rung
+
+The third row resumes the SHA-bound 10k checkpoint and ends at formation step
+15,000. Independent validation found exactly three ladder rows at 5k, 10k,
+and 15k and confirmed the full Recipe v2 surface: pure text8 train shards,
+L16 H16 D1024 RoPE, batch 8 with accumulation 2, fp32 Muon at `0.01`, and the
+50,000-step cosine schedule with `lr_final_frac=0.1`. The row has
+`resume_loaded=true`, `resume_step=10000`, `steps=5000`,
+`formation_forward_passes=30000`, finite metrics, and exactly `201,609,249`
+total and trainable parameters.
+
+| 15k rung quantity | Measured value |
+| --- | ---: |
+| Sampled validation NLL / bits | 0.998940 / 1.441166 |
+| Training elapsed seconds | 5,688.8928 |
+| Frozen letters choice accuracy / MRR | 0.072266 / 0.244082 |
+| TinyStories retention bpc / NLL | 3.820135 / 2.647916 |
+| Frozen probe cases | 1,024 |
+| Retention characters | 1,499,904 |
+
+The exact nonempty unsuffixed plus 5k/10k/15k checkpoint ladder is retained
+under `C:\cassandra_runs\stage61_pure_broad_200m_checkpoints`. The unsuffixed
+15k checkpoint SHA-256 is
+`63a5d4e51548993c6edc0a24afe40d537531c24a9aa3fdac845551318994e8d0`; the
+step-15k checkpoint SHA-256 is
+`d165578a8f38c31260921f902662944e52e913285013d1d53143e31ddb3f0980`.
+Exactly one complete instrumentation row is SHA-bound to the latter and
+includes the frozen 1,024-case letters probe plus deterministic TinyStories
+retention over 1,499,904 characters. The visible arm and instrumentation
+launcher completed successfully at
+`runs/phase6_stage61-arm-segment_20260722_093205_launcher.log`.
+### 20k resumed rung
+
+The fourth row resumes the SHA-bound 15k checkpoint and ends at formation step
+20,000. Independent validation found exactly four cumulative training rows at
+5k, 10k, 15k, and 20k. The new row preserves the registered Recipe v2
+surface: pure text8 shards, L16 H16 D1024 RoPE, batch 8 with accumulation 2,
+fp32 Muon at `0.01`, and the 50,000-step cosine schedule with
+`lr_final_frac=0.1`. It records `resume_loaded=true`, `resume_step=15000`,
+`steps=5000`, `training_target_steps=20000`, and
+`formation_forward_passes=40000`, with finite metrics and exactly
+`201,609,249` total and trainable parameters.
+
+| 20k rung quantity | Measured value |
+| --- | ---: |
+| Sampled validation NLL / bits | 0.997054 / 1.438444 |
+| Training elapsed seconds | 13,100.991 |
+| Frozen letters choice accuracy / MRR | 0.113281 / 0.284324 |
+| TinyStories retention bpc / NLL | 3.661781 / 2.538153 |
+| Frozen probe cases | 1,024 |
+| Retention characters | 1,499,904 |
+
+The exact nonempty unsuffixed plus 5k/10k/15k/20k checkpoint ladder is
+retained under `C:\cassandra_runs\stage61_pure_broad_200m_checkpoints`. The
+unsuffixed 20k checkpoint SHA-256 is
+`1426ff3f6a48f99e34d5bc5e977b9768dc29d25b5815eaa5368080f580a7990f`; the
+step-20k checkpoint SHA-256 is
+`0c25b9cd4ecfb9f5548b6f571aa667c26efc04c199f907e04094ee3af18abc2d`.
+Exactly one complete instrumentation row is SHA-bound to the latter and
+contains the frozen 1,024-case letters probe and deterministic TinyStories
+retention over 1,499,904 characters. The visible arm and instrumentation
+launcher completed successfully at
+`runs/phase6_stage61-arm-segment_20260722_111233_launcher.log`.
+### 25k resumed rung
+
+The fifth row resumes the SHA-bound 20k checkpoint and ends at formation step
+25,000. Independent validation found exactly five cumulative training rows at
+5k, 10k, 15k, 20k, and 25k. The row preserves the registered Recipe v2
+surface: pure text8 shards, L16 H16 D1024 RoPE, batch 8 with accumulation 2,
+fp32 Muon at `0.01`, and the 50,000-step cosine schedule with
+`lr_final_frac=0.1`. It records `resume_loaded=true`, `resume_step=20000`,
+`steps=5000`, `training_target_steps=25000`, and
+`formation_forward_passes=50000`, with finite metrics and exactly
+`201,609,249` total and trainable parameters.
+
+| 25k rung quantity | Measured value |
+| --- | ---: |
+| Sampled validation NLL / bits | 0.978314 / 1.411409 |
+| Training elapsed seconds | 5,861.6255 |
+| Frozen letters choice accuracy / MRR | 0.143555 / 0.303671 |
+| TinyStories retention bpc / NLL | 3.677762 / 2.549230 |
+| Frozen probe cases | 1,024 |
+| Retention characters | 1,499,904 |
+
+The exact nonempty unsuffixed plus 5k/10k/15k/20k/25k checkpoint ladder is
+retained under `C:\cassandra_runs\stage61_pure_broad_200m_checkpoints`. The
+unsuffixed 25k checkpoint SHA-256 is
+`5da663630cc8756a8a287de2ddeb472e948fafa00c0fcc53fcc3c26d542b1b1a`; the
+step-25k checkpoint SHA-256 is
+`a7ac3439d9922954a0d1c27c583d2770975b21cb8fce74bb16ad00f353b67b64`.
+Exactly one complete instrumentation row is SHA-bound to the latter and
+contains the frozen 1,024-case letters probe and deterministic TinyStories
+retention over 1,499,904 characters. The visible arm and instrumentation
+launcher completed successfully at
+`runs/phase6_stage61-arm-segment_20260722_145506_launcher.log`.
+### 30k resumed rung
+
+The sixth row resumes the SHA-bound 25k checkpoint and ends at formation step
+30,000. Independent validation found exactly six cumulative training rows at
+5k, 10k, 15k, 20k, 25k, and 30k. The row preserves the registered Recipe v2
+surface: pure text8 shards, L16 H16 D1024 RoPE, batch 8 with accumulation 2,
+fp32 Muon at `0.01`, and the 50,000-step cosine schedule with
+`lr_final_frac=0.1`. It records `resume_loaded=true`, `resume_step=25000`,
+`steps=5000`, `training_target_steps=30000`, and
+`formation_forward_passes=60000`, with finite metrics and exactly
+`201,609,249` total and trainable parameters.
+
+| 30k rung quantity | Measured value |
+| --- | ---: |
+| Sampled validation NLL / bits | 0.927699 / 1.338387 |
+| Training elapsed seconds | 5,795.7358 |
+| Frozen letters choice accuracy / MRR | 0.090820 / 0.293028 |
+| TinyStories retention bpc / NLL | 3.652998 / 2.532065 |
+| Frozen probe cases | 1,024 |
+| Retention characters | 1,499,904 |
+
+The exact nonempty unsuffixed plus 5k/10k/15k/20k/25k/30k checkpoint ladder
+is retained under `C:\cassandra_runs\stage61_pure_broad_200m_checkpoints`.
+The unsuffixed 30k checkpoint SHA-256 is
+`c1a23cc5536a909446062096747b00dcca920fdae6dd273bbeebe09616c4532a`; the
+step-30k checkpoint SHA-256 is
+`59fc76f4c30783f1661cff114ed2f5e335a59481e86a5cc9b2dde599a7627ce6`.
+Exactly one complete instrumentation row is SHA-bound to the latter and
+contains the frozen 1,024-case letters probe and deterministic TinyStories
+retention over 1,499,904 characters. The visible arm and instrumentation
+launcher completed successfully at
+`runs/phase6_stage61-arm-segment_20260722_164048_launcher.log`.
+### 35k resumed rung
+
+The seventh row resumes the SHA-bound 30k checkpoint and ends at formation
+step 35,000. Independent validation found exactly seven cumulative training
+rows at 5k through 35k. The row preserves Recipe v2: pure text8 shards, L16
+H16 D1024 RoPE, batch 8 with accumulation 2, fp32 Muon at `0.01`, and the
+50,000-step cosine schedule with `lr_final_frac=0.1`. It records
+`resume_loaded=true`, `resume_step=30000`, `steps=5000`,
+`training_target_steps=35000`, and `formation_forward_passes=70000`, with
+finite metrics and exactly `201,609,249` total and trainable parameters.
+
+| 35k rung quantity | Measured value |
+| --- | ---: |
+| Sampled validation NLL / bits | 0.911484 / 1.314994 |
+| Training elapsed seconds | 6,249.8894 |
+| Frozen letters choice accuracy / MRR | 0.121094 / 0.341396 |
+| TinyStories retention bpc / NLL | 3.580082 / 2.481524 |
+| Frozen probe cases | 1,024 |
+| Retention characters | 1,499,904 |
+
+The exact nonempty unsuffixed plus 5k-through-35k checkpoint ladder is
+retained under `C:\cassandra_runs\stage61_pure_broad_200m_checkpoints`. The
+unsuffixed 35k checkpoint SHA-256 is
+`e8f20595cad3e76f36d85c225e29b69843ee9c6f43fa6f06f3aec38b4bd131d9`; the
+step-35k checkpoint SHA-256 is
+`1fe0028ef70bb13f69510631e81bcea2e48f132bd6855b28b4eeb642c6eac91d`.
+Exactly one complete instrumentation row is SHA-bound to the latter and
+contains the frozen 1,024-case letters probe and deterministic TinyStories
+retention over 1,499,904 characters. The visible arm and instrumentation
+launcher completed successfully at
+`runs/phase6_stage61-arm-segment_20260722_182305_launcher.log`.
+
+### 40k resumed rung
+
+The eighth row resumes the SHA-bound 35k checkpoint and ends at formation
+step 40,000. It preserves Recipe v2: pure text8 shards, L16 H16 D1024 RoPE,
+batch 8 with accumulation 2, fp32 Muon at `0.01`, and the 50,000-step cosine
+schedule with `lr_final_frac=0.1`. It records `resume_loaded=true`,
+`resume_step=35000`, `steps=5000`, `training_target_steps=40000`, and
+`formation_forward_passes=80000`, with finite metrics and exactly
+`201,609,249` total and trainable parameters
+(`runs/stage61_pure_broad_200m_seed7.jsonl`, row 8).
+
+| 40k rung quantity | Measured value |
+| --- | ---: |
+| Sampled validation NLL / bits | 0.877566 / 1.266061 |
+| Training elapsed seconds | 5,692.3533 |
+| Frozen letters choice accuracy / MRR | 0.122070 / 0.297137 |
+| TinyStories retention bpc / NLL | 3.574275 / 2.477499 |
+| Frozen probe cases | 1,024 |
+| Retention characters | 1,499,904 |
+
+The step-40k checkpoint SHA-256 is
+`ce0ffa9d3b3f0c593eb167ce050a2baa4f87267992a69454abb8111a1246eef4`. This
+entry was drafted by Claude on 2026-07-22 directly from the preserved
+`stage61_pure_broad_200m_seed7.jsonl` row and the instrumentation ledger;
+Codex's session ended before writing it up, though the training and
+instrumentation themselves completed cleanly (`status=success`,
+`runs/phase6_stage61-arm-segment_20260722_201331_launcher.log`). The
+unsuffixed checkpoint's SHA-256 at the moment 40k completed was not
+captured before a later continuation overwrote it with 50k content; only
+the step-suffixed checkpoint (never overwritten) is cited here.
+
+### Claude continuation, 40k to 50k, and closeout
+
+Codex's session ran out of budget after the 40k rung completed. Claude
+resumed training 2026-07-22 at 22:32 local. The launcher modes that
+produced every rung above (`stage61-arm-segment` and its size-gate,
+throughput, and resume-drill siblings) were absent from the working copy
+of `run_phase6_visible.ps1` at handoff time (git showed the file modified
+but without those branches; the exact code Codex used for them is not
+recoverable). Claude reconstructed only `stage61-arm-segment`, reusing the
+file's existing, already-audited gate helpers
+(`Assert-GpuIdleForLaunch`, `Assert-MusahitWindowReady`,
+`Assert-CheckpointWriteReady`, `Invoke-VisiblePython`) and reproducing the
+training and instrumentation commands verbatim from the last successful
+launcher log, changing only `-Budget` and `-ResumeFrom`. Full detail,
+including a failed first launch attempt (a Windows-PowerShell-versus-pwsh
+argument-quoting mismatch in the pre-existing checkpoint-write probe,
+caught at the gate stage before any GPU time was spent, fixed by invoking
+natively through pwsh) and the checkpoint sanity load, is in
+`runs/stage61_pure_broad_200m_seed7_pitstop_20260722.md`.
+
+One continuous 10,000-step invocation carried the run from the SHA-bound
+40k checkpoint through the registered 50,000-step target, checkpointing at
+45k and 50k. It records `resume_loaded=true`, `resume_step=40000`,
+`steps=10000`, `training_target_steps=50000`, and
+`formation_forward_passes=100000`, with finite metrics and exactly
+`201,609,249` total and trainable parameters
+(`runs/stage61_pure_broad_200m_seed7.jsonl`, row 9, the final row). Because
+this was one invocation rather than two separate 5,000-step segments, its
+`seconds` field covers the whole 40k-to-50k span; there is no distinct
+per-invocation timing for the 45k checkpoint alone.
+
+| Rung | Sampled val NLL / bits | Letters choice acc / MRR | Retention bpc / NLL |
+| --- | ---: | ---: | ---: |
+| 45k | 0.859932 / 1.240619 | 0.112305 / 0.279710 | 3.580812 / 2.482030 |
+| 50k (final) | 0.892987 / 1.288308 | 0.123047 / 0.289609 | 3.605735 / 2.499305 |
+
+Training elapsed for the full 40k-to-50k invocation: `12,805.1704` seconds.
+Checkpoint SHA-256: 45k
+`9914d7e5b7027446b021b68baa2286ef5dff6bd781bf5fb445ec8dcd35b4f2ed`; 50k
+(final, also the unsuffixed copy)
+`184817bc9b45cc4a37244ee6a0569c42e5891594d35f2d4ad4ec47f6aaf25fc1`. Both
+instrumentation rows are complete, SHA-bound, over the registered 1,024
+probe cases and 1,499,904 retention characters.
+
+The run crossed the 02:00 MUSAHIT collision window mid-segment (between
+the logged step-49000 and step-50000 lines). The one-shot
+`SKIP_NEXT_RUN.flag`, staged that morning and still unconsumed at launch
+time, was confirmed consumed (deleted) immediately after completion,
+evidencing a clean skip with no collision.
+
+The complete letters-probe formation curve across all ten rungs (5k
+through 50k) never crosses the registered `0.1625` PRESENT line: accuracy
+stays in the `0.072` to `0.144` band throughout, noisily, with no
+monotonic trend toward formation even at the full 50,000-step budget. This
+is a data point for H026, not a Stage 61 publish bar, and is left for
+Claude's H026 read-back rather than interpreted here.
+
+**Correction, 2026-07-23.** A canonical, complete, dedicated Stage 61
+launcher, `run_stage61_visible.ps1`, plus four companion scripts
+(`make_stage61_budget.py`, `make_stage61_instrumentation.py`,
+`make_stage61_publish_bars.py`, `make_stage61_user_samples.py`), was
+found on disk, untracked in git. This is the code that actually produced
+the size gate, throughput measure, resume drill, and every 5,000-step
+arm through step 40,000; nothing was ever lost from
+`run_phase6_visible.ps1` as the section above assumed, because Stage
+61's launcher logic never lived there. Full detail in the correction
+addendum of `runs/stage61_pure_broad_200m_seed7_pitstop_20260722.md`.
+One consequence: `make_stage61_publish_bars.py` enforces a strict
+one-row-per-5,000-steps training ladder shape, and Claude's single
+10,000-step continuation row breaks that shape check (fails with
+"Training ladder has 9 rows, expected 10"; verbatim traceback in
+`runs/stage61_publish_bars_verifier_attempt.log`). Every OTHER check the
+verifier performs was confirmed by hand, recorded in
+`runs/stage61_publish_bars.json`. The deterministic text8 TEST score
+below and the earlier `1.336059` figure both refer to the SAME trained
+weights, verified bit-identical (see below); no science number changes.
+
+**Deterministic closeout.** The registered ADR 0014 chunked evaluation on
+the true unsuffixed final checkpoint (SHA-256
+`4e5c0c0540b7b019f7fb6a53636a8963cffae145e6182e2e41aa463b2f8bacd5`),
+`runs/stage61_text8_test.json`, reports `1.3360590240809143` bits/char
+(`nll=0.9260855456033578`) over the full `4,999,936`-character text8 TEST
+split, chunked non-overlapping windows, `19,531` windows, `280.7`
+seconds. This is bit-identical to full double precision to the earlier
+reading on `step050000.pt` (`runs/stage61_pure_broad_200m_seed7_text8_test.json`,
+`1.3360590240809143` / `0.9260855456033578`), confirming the two
+checkpoint files hold identical trained weights despite different
+SHA-256 hashes (non-weight metadata differs, most likely captured RNG
+state). The true final checkpoint's letters-probe and TinyStories
+retention instrumentation row is also complete and matches
+step050000.pt's to the displayed precision (choice accuracy `0.123047`,
+retention `3.605735` bits/char;
+`runs/stage61_instrumentation.jsonl`, 11th row, `--include-final`).
+
+**Decision, against ADR 0018 D5, precedence order:**
+
+- (a) `1.336059` is strictly below the 85M COLD anchor `1.357318`
+  (`runs/stage58_dev_cold_85m_b42000_seed7_text8_test.json`) by
+  `0.021259` bits/char, about seven times the known between-seed noise
+  floor (`0.003035`, Stage 56 20k replica spread). **PASS**, not FAIL.
+- (b) The instrumentation ledger is complete for all ten step-numbered
+  checkpoints plus the true final
+  (`runs/stage61_instrumentation.jsonl`, `runs/stage61_instrumentation.md`).
+  **PASS**.
+- (c) The user's sample review is outstanding. The formal fixed
+  8-prompt, temperature-sampled review sheet
+  (`runs/stage61_user_samples.json`, `runs/stage61_user_samples.md`,
+  generated by the canonical `make_stage61_user_samples.py` against the
+  true final checkpoint) was surfaced to the user directly for review,
+  superseding the single ad-hoc sample referenced in the prior version of
+  this entry.
+
+Formal bars record: `runs/stage61_publish_bars.json`,
+`runs/stage61_publish_bars.md` (manually verified per the correction
+above; every substantive check the canonical verifier performs, other
+than the row-shape check, passes).
+
+**Stage 61 is PUBLISH-WORTHY pending only (c).** No packaging step
+(ADR 0017 D5, carried over) proceeds before the user's review resolves.
+
+Interpretation: this is a step-budget-matched, not compute-matched,
+capacity comparison against the 85M COLD anchor (the 200M model used
+50,000 steps at a larger per-step cost than the 85M model's 42,000-step
+run). It is a real, noise-clearing improvement on the primary metric, not
+proof that scale is efficient at this budget; the model card states the
+comparison's exact terms. It says nothing about the letters-probe circuit
+question, which H026 owns separately.
