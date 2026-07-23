@@ -650,16 +650,18 @@ Latest local numbers are recorded in
     ADR 0018 D5 (beat `1.357318`, instrumentation complete, sample
     review; margin printed next to the `0.003035` spread). Hugging Face
     packaging prepared by Codex; every public button is the user's.
-73. Context-utilization probe (H027, Stage 62) · eval-only. The Stage 61
-    flagship writes locally fluent but topically drifting text (the user's
-    "off-topic" review), a long-range-context failure invisible to NLL. A
-    probe scores held-out text8 target segments under their TRUE versus a
-    RANDOM preceding context, resolved by distance into the target to defeat
-    a boundary-continuity confound, with a synthetic sensitivity anchor so a
-    null is interpretable. The deep-bucket utilization `U_deep` picks the
-    Phase 6 coherence intervention: E-uses-context (CI lower bound at or above
-    `0.05` bits/char) launches a longer-context char arm (block 512, reuses
-    the char stack); E-local (deep use within noise while local use is real)
-    launches a subword/BPE substrate arm (reopens substrate for coherence,
-    not the Stage 56 GAP). Runs independently of and in parallel with H026.
-    See `docs/hypotheses/027-context-utilization-and-coherence.md`.
+73. Context-utilization probe (H027, Stage 62) · RESOLVED E-uses-context
+    (ADR 0019). The Stage 61 flagship writes locally fluent but topically
+    drifting text (the user's "off-topic" review), a failure invisible to
+    NLL. The probe scored held-out text8 target segments under their TRUE
+    versus a RANDOM preceding context, resolved by distance into the target,
+    with a null control and a synthetic sensitivity anchor. Result: deep-bucket
+    utilization `+0.205289` bits/char (CI `[+0.198204, +0.212034]`, far above
+    the `0.05` line), with a rising `L_c` dose curve. The flagship USES its
+    context strongly to the edge of its 256-char window; the drift is a
+    window-SIZE limit, not a comprehension failure. This selects the cheap
+    longer-context char arm (block 512, reuses the char stack) over the
+    subword substrate. The block-512 training arm is user-gated compute
+    (next spec, H028 class). See
+    `docs/hypotheses/027-context-utilization-and-coherence.md` and
+    `docs/decisions/0019-phase-6-coherence-is-a-window-limit-longer-context-arm.md`.

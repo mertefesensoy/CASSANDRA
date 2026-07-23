@@ -7000,3 +7000,99 @@ run). It is a real, noise-clearing improvement on the primary metric, not
 proof that scale is efficient at this budget; the model card states the
 comparison's exact terms. It says nothing about the letters-probe circuit
 question, which H026 owns separately.
+
+## Stage 62 - H027 Context-Utilization Probe
+
+Date: 2026-07-23
+
+Handoff:
+
+Stage 62 implements H027. The Stage 61 flagship writes locally fluent but
+topically drifting text (the user's "off-topic, like ADHD" review). That drift
+is invisible to NLL, so this stage builds a probe that measures whether the
+model actually USES its preceding context, and uses the answer to pick the
+Phase 6 coherence intervention: a longer context window (if the model uses
+context and the window is the wall) versus a subword substrate (if it ignores
+the window it already has).
+
+Code change:
+
+New `experiments/tiny_language_lab/eval_context_utilization.py`, reusing
+`flagship_eval_lib.load_model`, `encode_fast`, and `LOG2E`, and the text8 split
+loader from `eval_text8.ensure_text8`. For each held-out text8 passage it scores
+per-target-character NLL under the passage's TRUE first `L_c` chars versus a
+RANDOM other passage's first `L_c` chars (a Sattolo derangement, so no passage
+sees its own context), with the whole `L_c + L_t` sequence inside one window.
+`U = NLL_random - NLL_true` per target offset, bucketed by distance into the
+target, with 2,000-resample bootstrap CIs. It also runs a synthetic deep-copy
+sensitivity anchor, an `L_c` dose curve, and a double-random control.
+
+Verification:
+
+- Double-random control deep-bucket `U = -0.004342` bits/char, CI
+  `[-0.008509, -0.000098]`: with two wrong contexts the signal collapses to
+  zero, so the probe does not manufacture a difference.
+- Synthetic deep-copy anchor deep-bucket `U = +0.857891` bits/char, CI
+  `[+0.843835, +0.872035]`: the deep bucket registers a large signal when deep
+  context is genuinely informative, so a null would indict the model, not the
+  probe.
+- Near-boundary buckets are strongly positive and decay monotonically
+  (`+5.72`, `+1.36`, `+0.64`, `+0.37`, `+0.21`), the expected sharp-nearby,
+  fuzzy-far-away shape.
+
+Primary command shape:
+
+    python .\experiments\tiny_language_lab\eval_context_utilization.py `
+      --checkpoint C:\cassandra_runs\stage61_pure_broad_200m_checkpoints\stage61_pure_broad_200m_seed7_random_full_seed7.pt `
+      --split test --n 4096 --context-len 192 --target-len 64 `
+      --bucket-edges 4 8 16 32 --seed 20260723 --device cuda `
+      --synthetic-anchor --control --context-len-sweep 64 128 192 `
+      --out runs\stage62_context_util_flagship.json `
+      --summary runs\stage62_context_util_flagship.md
+
+Artifacts:
+
+- `runs/stage62_context_util_flagship.json` and `.md` (N=4096, seed 20260723,
+  checkpoint SHA-256 `4e5c0c05...`).
+- Dev smoke at N=128 preserved as `runs/stage62_smoke.json` / `.md`.
+
+Results (flagship, 201,609,249 params, block 256, text8 TEST split, N=4096):
+
+| Target chars into segment | U (bits/char) | 95% CI |
+| --- | ---: | --- |
+| 1-4 | +5.723206 | [+5.657148, +5.800318] |
+| 5-8 | +1.357182 | [+1.320663, +1.395129] |
+| 9-16 | +0.639015 | [+0.619614, +0.659362] |
+| 17-32 | +0.368219 | [+0.356334, +0.380070] |
+| 33-64 (deep) | +0.205289 | [+0.198204, +0.212034] |
+
+`L_c` dose curve (deep bucket): `L_c=64` gives `+0.136498`, `L_c=128` gives
+`+0.179659`, `L_c=192` gives `+0.205289`; deep utilization RISES with more
+available context, so the model's appetite is not saturated at the window edge.
+
+Decision:
+
+Stage 62 reads **E-uses-context** under H027. The deep-bucket `U` CI lower bound
+`+0.198204` is far above the `0.05` bits/char line; the control is null and the
+synthetic anchor confirms deep sensitivity, so the reading is trustworthy. The
+flagship uses its context strongly out to 33-64 characters deep, which spans
+nearly the entire 256-character window. The topical drift is therefore a
+context-WINDOW-SIZE limit, not a failure to use context: the model uses
+everything it can see (about 45 words) and drifts when a longer generation runs
+past the window and the opening falls out of view. The rising dose curve is
+direct evidence that a larger window would be used, not wasted. Per H027 this
+selects the LONGER-CONTEXT char arm (block 512), the cheapest intervention,
+which reuses the entire char eval and probe stack unchanged, over the expensive
+subword-substrate arm. Recorded in ADR 0019.
+
+Interpretation:
+
+This measures context USE on text8, a proxy for topical coherence, not a human
+coherence judgment; the Stage 61 sample sheet and the user's review remain the
+ground truth for "reads better." It does not prove a block-512 model will
+actually be more coherent to a reader: a bigger window raises the ceiling, but
+the model must still learn to use the extra span, and the 8GB card bounds how
+far block size can grow before O(n^2) attention becomes prohibitive (Stage 57's
+block-512 timing row sizes it). It says nothing about the substrate question for
+the specialization gap (Stage 56 owns that) or the copy-circuit question (H026
+owns that), though all three concern long-range attention.

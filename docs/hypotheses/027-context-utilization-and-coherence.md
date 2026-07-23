@@ -1,13 +1,20 @@
 # Hypothesis 027 · The Stage 61 flagship's topical drift is a long-range-context-use failure that plain NLL cannot see, and a context-utilization probe decides whether the binding constraint is the window SIZE (fix: longer context) or the model not using the window it already has (fix: the substrate)
 
-- Status: OPEN. Specced for Codex as Stage 62 (README ladder rung 73).
-  Audited 2026-07-23 (hypothesis-auditor pass; all four required fixes
-  applied: a deep-bucket sensitivity anchor so a null is interpretable, an
-  exhaustive precedence-ordered partition, a pinned runnable handoff with
-  concrete N/seed/derangement/paths, and a Gemini prior-art flag). The probe
-  is eval-only and runs on existing checkpoints, so it is independent of and
-  may run in parallel with the H026 circuit-mapping stage (Stage 60); neither
-  gates the other.
+- Status: RESOLVED, E-USES-CONTEXT (2026-07-23, Stage 62, ADR 0019). The
+  flagship's deep-bucket context utilization (target chars 33 to 64) is
+  `+0.205289` bits/char, CI `[+0.198204, +0.212034]`, with the CI lower bound
+  about four times the `0.05` line; the double-random control is null
+  (`-0.004342`), the synthetic anchor confirms deep sensitivity
+  (`+0.857891`), and the `L_c` dose curve rises (`0.136` to `0.180` to
+  `0.205`). The drift is a context-window-SIZE limit, not a failure to use
+  context; per the pre-registered rule this selects the LONGER-CONTEXT char
+  arm (block 512) over the subword substrate. Evidence:
+  `runs/stage62_context_util_flagship.json`, `RESULTS.md` Stage 62. Closure
+  and the block-512 follow-on are in ADR 0019
+  (`docs/decisions/0019-phase-6-coherence-is-a-window-limit-longer-context-arm.md`).
+  (Original pre-registration follows, frozen: specced for Codex as Stage 62,
+  rung 73; audited 2026-07-23 with all four required fixes applied; the probe
+  ran eval-only, independent of the H026 circuit-mapping stage.)
 - Date: 2026-07-23
 - Author: Claude (hypothesis and roadmap role)
 - Ladder rung: 73 (Codex stage number 62)
