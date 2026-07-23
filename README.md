@@ -650,3 +650,16 @@ Latest local numbers are recorded in
     ADR 0018 D5 (beat `1.357318`, instrumentation complete, sample
     review; margin printed next to the `0.003035` spread). Hugging Face
     packaging prepared by Codex; every public button is the user's.
+73. Context-utilization probe (H027, Stage 62) · eval-only. The Stage 61
+    flagship writes locally fluent but topically drifting text (the user's
+    "off-topic" review), a long-range-context failure invisible to NLL. A
+    probe scores held-out text8 target segments under their TRUE versus a
+    RANDOM preceding context, resolved by distance into the target to defeat
+    a boundary-continuity confound, with a synthetic sensitivity anchor so a
+    null is interpretable. The deep-bucket utilization `U_deep` picks the
+    Phase 6 coherence intervention: E-uses-context (CI lower bound at or above
+    `0.05` bits/char) launches a longer-context char arm (block 512, reuses
+    the char stack); E-local (deep use within noise while local use is real)
+    launches a subword/BPE substrate arm (reopens substrate for coherence,
+    not the Stage 56 GAP). Runs independently of and in parallel with H026.
+    See `docs/hypotheses/027-context-utilization-and-coherence.md`.
