@@ -1,3 +1,15 @@
+---
+license: apache-2.0
+language:
+- en
+tags:
+- text-generation
+- character-level
+- research
+- cassandra
+pipeline_tag: text-generation
+---
+
 # Cassandra 200M text8 (pure-broad character flagship)
 
 A 201,609,249-parameter decoder-only **character-level** language model trained
