@@ -53,6 +53,17 @@ working copies, and no hardware move is needed.
 
 ### A3 · Artifact packaging on Hugging Face Hub (this IS the disk relief)
 
+> **Update 2026-07-23:** the first model to publish is the **Stage 61
+> pure-broad 200M text8 flagship** (text8 TEST `1.336059` bits/char), not the
+> Stage 55 TinyStories flagship this plan was first written around. Its package
+> is prepared and upload-ready at `C:\cassandra_runs\stage61_release\`
+> (weights license Apache-2.0, user-chosen; recommended inference top-p 0.9,
+> user-chosen). The operative, current instructions are
+> `docs/release/stage61-flagship/UPLOAD.md`; the model card is
+> `docs/release/stage61-flagship/MODEL_CARD.md`; the reproducible packager is
+> `experiments/tiny_language_lab/make_stage61_release.py`. The generic A3/A4
+> steps below still describe the multi-model end state.
+
 1. (M) Create a Hugging Face account and namespace (about 10 minutes;
    the only step no one can do for you besides sign-offs).
 2. (X) Export every keep-set model to fp16 safetensors, model-only:
