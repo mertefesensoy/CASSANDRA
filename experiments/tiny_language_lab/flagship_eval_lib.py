@@ -210,22 +210,55 @@ def sample_text(
     max_new_chars: int = 400,
     temperature: float = 0.8,
     top_k: int = 0,
+    top_p: float = 0.0,
+    repetition_penalty: float = 1.0,
     seed: int = 7,
     device: str = "cuda",
 ) -> str:
-    """Temperature plus optional top-k sampling, seeded for reproducibility."""
+    """Temperature with optional top-k, nucleus (top-p), and repetition-penalty
+    sampling, seeded for reproducibility.
+
+    Defaults reproduce the prior temperature-plus-top-k behavior: `top_p <= 0`
+    or `>= 1` disables nucleus truncation, and `repetition_penalty == 1`
+    disables the penalty. Filter order per step: repetition penalty on raw
+    logits, then temperature, then top-k, then top-p. Repetition penalty is a
+    CTRL-style rescale (positive logits divided, negative multiplied) over the
+    tokens already in the window; at the character level it is a weak lever
+    because almost every character recurs, so it is provided mainly for
+    completeness. Nucleus and temperature are the effective controls for
+    topical drift.
+    """
     prompt_n = normalize_to_alphabet(prompt, codec)
     idx = torch.tensor([codec.encode(prompt_n)], dtype=torch.long, device=device)
     generator = torch.Generator(device=device)
     generator.manual_seed(int(seed))
     temperature = max(float(temperature), 1e-4)
+    penalty = max(float(repetition_penalty), 1e-4)
     for _ in range(int(max_new_chars)):
         idx_cond = idx[:, -model.block_size :]
         logits, _ = model(idx_cond, base_logits=None)
-        logits = logits[:, -1, :] / temperature
+        logits = logits[:, -1, :]
+        if penalty != 1.0:
+            seen = torch.unique(idx_cond)
+            gathered = logits[:, seen]
+            logits[:, seen] = torch.where(
+                gathered > 0, gathered / penalty, gathered * penalty
+            )
+        logits = logits / temperature
         if top_k and top_k > 0:
             top_vals, _ = torch.topk(logits, min(int(top_k), logits.size(-1)))
             logits[logits < top_vals[:, [-1]]] = -float("inf")
+        if 0.0 < top_p < 1.0:
+            sorted_logits, sorted_idx = torch.sort(logits, descending=True, dim=-1)
+            cum = torch.cumsum(torch.softmax(sorted_logits, dim=-1), dim=-1)
+            remove_sorted = cum > top_p
+            # shift so the token that crosses the threshold is kept
+            remove_sorted[:, 1:] = remove_sorted[:, :-1].clone()
+            remove_sorted[:, 0] = False
+            remove = torch.zeros_like(remove_sorted).scatter(
+                -1, sorted_idx, remove_sorted
+            )
+            logits[remove] = -float("inf")
         probs = torch.softmax(logits, dim=-1)
         next_id = torch.multinomial(probs, num_samples=1, generator=generator)
         idx = torch.cat((idx, next_id), dim=1)

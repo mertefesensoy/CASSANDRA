@@ -7096,3 +7096,43 @@ far block size can grow before O(n^2) attention becomes prohibitive (Stage 57's
 block-512 timing row sizes it). It says nothing about the substrate question for
 the specialization gap (Stage 56 owns that) or the copy-circuit question (H026
 owns that), though all three concern long-range attention.
+
+### Workstream 2: sampling-grid diagnostic
+
+Date: 2026-07-23
+
+Code change: `flagship_eval_lib.sample_text` gained nucleus (`top_p`) and
+`repetition_penalty` controls (backward compatible; the defaults reproduce the
+prior temperature-plus-top-k behavior). New
+`experiments/tiny_language_lab/make_stage62_sampling_grid.py` regenerates three
+fixed prompts across a decoding grid on the flagship, so the same prompt reads
+across settings. Artifacts: `runs/stage62_sampling_grid.json` and `.md`.
+
+Finding: decoding trades one failure mode for another around a single
+underlying deficit, and cannot manufacture topical coherence.
+
+- The temperature-0.8 no-truncation baseline (the Stage 61 review-sheet
+  default) admits a wild low-probability tail: rare near-garbage tokens
+  (aircraft designations, broken strings such as "brira s mi two mi six") that
+  read as the worst of the drift. Nucleus truncation (`top_p 0.9`) removes
+  them, so that part of the perceived incoherence WAS a sampling artifact.
+- The residual TOPIC drift survives tighter decoding. At `top_p 0.9` the model
+  still wanders subject to subject clause by clause (constitution to Caesar to
+  the British crown to Kafka). Lowering temperature does not fix it; it
+  collapses the model into REPETITION LOOPS instead ("the united states of
+  america and the united states of america ..."; greedy degenerates to "the
+  continent and the continent ..."). A mild repetition penalty (`1.3`)
+  suppresses the loops but not the drift.
+- So the decoder can only choose between wander (high temperature) and loop
+  (low temperature), two symptoms of the same missing long-range plan; neither
+  is coherence. This is independent BEHAVIORAL corroboration of the H027 and
+  ADR 0019 window-limit finding: a model that cannot see its whole generation
+  has no global plan for any decoder to exploit.
+
+Practical recommendation (not a science claim): the most readable setting on
+this grid is about temperature `0.7` to `0.8` with `top_p 0.9` and a mild
+repetition penalty, which avoids both the garbage tail and the loops, and is a
+better default for any future sample sheet than temperature `0.8` with no
+truncation. The canonical Stage 61 review sheet is left unchanged so the
+pending publish review judges a fixed artifact; the user may prefer the grid's
+tighter setting.

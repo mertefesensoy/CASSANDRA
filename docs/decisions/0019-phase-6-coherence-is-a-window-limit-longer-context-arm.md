@@ -49,6 +49,14 @@ All verified against `runs/stage62_context_util_flagship.json`.
    and decay monotonically (`+5.72`, `+1.36`, `+0.64`, `+0.37`, `+0.21`), the
    sharp-nearby, fuzzy-far-away signature of a model that uses context across
    its whole window.
+5. **Behavioral corroboration (Workstream 2, `RESULTS.md` Stage 62,
+   `runs/stage62_sampling_grid.json`).** A decoding grid on the flagship shows
+   the sampler can only trade wander for loop: nucleus truncation removes the
+   wild garbage tail (part of the drift WAS a sampling artifact), but the
+   residual topic drift survives tighter decoding, and lowering temperature
+   collapses the model into repetition loops rather than coherence. A model
+   with no long-range plan gives the decoder nothing to exploit, which is the
+   window limit seen from the generation side.
 
 ## Decision
 
