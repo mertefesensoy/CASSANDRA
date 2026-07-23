@@ -83,5 +83,49 @@ Verify the upload (checksums) BEFORE deleting any local checkpoint.
 Weights ship as `safetensors` (no pickle), so Hugging Face loads them without a
 security warning and the file cannot execute code on load.
 
+## Refresh the card, evaluation table, and reproduction script
+
+The staged model card now carries a Hugging Face metadata header and a
+machine-readable `model-index` evaluation table (text8 test bits/char
+`1.336061` on the released fp16 weights), and the package ships
+`reproduce_text8_eval.py` so anyone can independently verify that number. Push
+the updated files (only the changed ones commit):
+
+```powershell
+hf upload mertefesensoy/cassandra-200m-text8 C:\cassandra_runs\stage61_release . --repo-type model
+```
+
+## Evaluation and third-party validation
+
+The headline metric, **text8 test bits/char**, is a standard character-LM
+benchmark, so the result is directly comparable to published models and, via
+the shipped `reproduce_text8_eval.py`, independently reproducible on the
+released weights. It is self-reported but verifiable; that is the honest form of
+external validation here. There is **no automatic third-party evaluation** for
+this model: the Open LLM Leaderboard and Hugging Face inference-based evals
+target instruction-tuned models loadable by the standard harness, and this is a
+custom-architecture character model.
+
+## Live demo: a Gradio Space (free, interactive)
+
+**Inference Providers and the model-page inference widget will not work for this
+model.** Those route to hosted providers for standard-architecture
+(transformers-loadable) models; a bespoke 200M character model is not eligible.
+The right way to give people a live, in-browser demo is a Gradio Space. The
+Space package is prepared at `C:\cassandra_runs\stage61_space\` (app.py,
+requirements.txt, README.md, and the two model-code files it imports).
+
+```powershell
+hf repo create cassandra-200m-text8-demo --repo-type space --sdk gradio
+hf upload mertefesensoy/cassandra-200m-text8-demo C:\cassandra_runs\stage61_space . --repo-type space
+```
+
+The Space builds and launches automatically on the free CPU tier, where
+character-by-character generation is slow (outputs are kept short). Upgrade the
+Space hardware to a GPU in its Settings for faster, longer generations. If you
+later need a hosted inference API rather than a demo, that requires a dedicated
+Inference Endpoint with a custom `handler.py` (paid), not the serverless
+providers.
+
 Nothing here is irreversible until step 6. I do not run the upload; that is your
 button to press.

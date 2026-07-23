@@ -8,6 +8,24 @@ tags:
 - research
 - cassandra
 pipeline_tag: text-generation
+model-index:
+- name: cassandra-200m-text8
+  results:
+  - task:
+      type: text-generation
+      name: Character-level language modeling
+    dataset:
+      type: text8
+      name: text8 (test split, final 5,000,000 characters)
+    metrics:
+    - type: bits_per_character
+      value: 1.336061
+      name: text8 test bits/char, released fp16 weights (lower is better)
+      verified: false
+    - type: cross_entropy
+      value: 0.926087
+      name: text8 test NLL in nats, released fp16 weights (lower is better)
+      verified: false
 ---
 
 # Cassandra 200M text8 (pure-broad character flagship)
@@ -86,19 +104,43 @@ temperature makes the model repeat itself, so avoid greedy decoding.
 
 ## Evaluation
 
-All numbers are deterministic and regenerable from the Cassandra repo.
+The headline metric is **bits per character on the standard text8 test split**
+(the final 5,000,000 characters), a long-established character-language-modeling
+benchmark, so the result is directly comparable to published models. Scoring is
+deterministic: non-overlapping 256-character windows over the whole test split,
+context reset per window (lower is better).
 
-| Metric | Value | Regeneration |
-| --- | ---: | --- |
-| text8 TEST bits/char (chunked, full 5M-char split) | **1.336059** | `python eval_text8.py --split test --checkpoint <weights>` |
-| Reference: 85M pure-broad model, same eval | 1.357318 | Cassandra Stage 58 COLD |
-| Reference: GPT-2 117M zero-shot text8 (Radford et al. 2019) | 1.17 | published |
-| Context-utilization, deep bucket (H027) | +0.205 bits/char | `python eval_context_utilization.py --checkpoint <weights> ...` |
+| Metric | Value |
+| --- | ---: |
+| **text8 test bits/char (released fp16 weights)** | **1.336061** |
+| text8 test NLL (nats, released fp16 weights) | 0.926087 |
+| text8 test bits/char (fp32 training checkpoint, project canonical) | 1.336059 |
+| Reference: Cassandra 85M pure-broad model, same eval | 1.357318 |
+| Reference: GPT-2 117M zero-shot text8 (Radford et al. 2019) | 1.17 |
 
-The model beats the 85M same-recipe reference by 0.021 bits/char, about seven
-times the known between-seed noise floor (0.003035). It does not match GPT-2,
-which used subword tokenization and far more training; the 1.17 anchor is
-aspirational context, not a peer comparison.
+The released fp16 weights reproduce the fp32 result to within `0.000002`
+bits/char (fp16 rounding). The model beats the same-recipe 85M reference by
+about `0.021` bits/char, roughly seven times the known between-seed noise floor
+(`0.003035`). It does not match GPT-2, which used subword tokenization and far
+more training; the `1.17` anchor is aspirational context, not a peer comparison.
+
+### Independent verification
+
+This number is self-reported but fully reproducible by anyone. The shipped
+`reproduce_text8_eval.py` downloads text8, scores the standard test split on the
+released fp16 weights with the deterministic method above, and prints
+`1.336061`:
+
+```bash
+python reproduce_text8_eval.py   # -> text8 bits/char : 1.336061
+```
+
+There is no automated third-party evaluation service for a custom-architecture
+character model (the Open LLM Leaderboard and Hugging Face inference-based evals
+target instruction-tuned models loadable by the standard harness), so
+reproducibility on a public benchmark is the honest form of external validation
+here. A separate Cassandra probe (H027) measures long-range context use at
+`+0.205` bits/char and is documented in the code repository.
 
 ## Limitations
 
