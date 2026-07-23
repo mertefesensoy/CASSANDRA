@@ -32,22 +32,27 @@ is given, with top-p 0.9 chosen as the recommended default (PASS).
    ```powershell
    pip install -U huggingface_hub
    ```
-4. **(you)** Log in with your token (it is entered by you, stored locally, and
+   The command is `hf` (huggingface_hub 1.x; the old `huggingface-cli` name was
+   removed). pip installs `hf.exe` into a Scripts folder that may not be on
+   PATH, so add it to the current PowerShell session first:
+   ```powershell
+   $env:PATH = "$env:PATH;C:\Users\senso\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\Scripts"
+   hf version   # should print version=1.24.0 or newer
+   ```
+   (If a fresh terminal ever cannot find `hf`, run that `$env:PATH` line again,
+   or call the full path `& "C:\Users\senso\AppData\Local\...\Python313\Scripts\hf.exe"`.)
+4. **(you)** Log in with your token (you enter it; it is stored locally and
    never seen by me):
    ```powershell
-   huggingface-cli login
+   hf auth login
    ```
-5. **(you)** Create the public model repo (or do it in the web UI):
+5. **(you)** Upload the staged folder to your repo (replace `<username>`). This
+   creates the public repo automatically if it does not exist:
    ```powershell
-   huggingface-cli repo create cassandra-200m-text8 --type model
+   hf upload <username>/cassandra-200m-text8 C:\cassandra_runs\stage61_release . --repo-type model
    ```
-6. **(you)** Upload the staged folder to your repo (replace `<username>`):
-   ```powershell
-   huggingface-cli upload <username>/cassandra-200m-text8 `
-     C:\cassandra_runs\stage61_release . --repo-type model
-   ```
-   (Newer CLI: `hf upload <username>/cassandra-200m-text8 C:\cassandra_runs\stage61_release .`)
-7. **(you)** Open the model page, confirm the card renders and the files are
+   (To create it explicitly first, or make it private: `hf repo create cassandra-200m-text8 --repo-type model`.)
+6. **(you)** Open the model page, confirm the card renders and the files are
    present, then download the weights once and run `inference_example.py` to
    confirm the public copy works end to end.
 
@@ -60,8 +65,8 @@ checkpoint itself, which still carries optimizer and generator state, to a
 PRIVATE repo:
 
 ```powershell
-huggingface-cli repo create cassandra-200m-text8-archive --type model --private
-huggingface-cli upload <username>/cassandra-200m-text8-archive `
+hf repo create cassandra-200m-text8-archive --repo-type model --private
+hf upload <username>/cassandra-200m-text8-archive `
   C:\cassandra_runs\stage61_pure_broad_200m_checkpoints\stage61_pure_broad_200m_seed7_random_full_seed7.pt `
   stage61_pure_broad_200m_seed7_fp32_resume.pt --repo-type model
 ```
