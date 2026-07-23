@@ -8,10 +8,11 @@ they require your account and token, which I never handle.
 ## What is already prepared
 
 Built and verified by `experiments/tiny_language_lab/make_stage61_release.py`
-(round-trip: the fp16 weights load and generate correctly). Staged in
-`C:\cassandra_runs\stage61_release\`:
+(round-trip: the fp16 weights load pickle-free and generate correctly). Staged
+in `C:\cassandra_runs\stage61_release\`:
 
-- `stage61_pure_broad_200m_text8_fp16.pt` (~406 MB) and its `.sha256`
+- `stage61_pure_broad_200m_text8_fp16.safetensors` (~406 MB) and its `.sha256`
+  (safetensors, no pickle: Hugging Face loads it without a security warning)
 - `config.json` (architecture, training provenance, recommended inference)
 - `codec.json` (the 33-character alphabet, index = token id)
 - `release_manifest.json` (SHA-256s, round-trip record)
@@ -52,30 +53,30 @@ is given, with top-p 0.9 chosen as the recommended default (PASS).
 
 ## Optional: private fp32 training archive (disk relief)
 
-The public weights are fp16 (inference). If you also want the full fp32
-resume-capable checkpoint archived (so the local 1.6 GB copy can later be
-deleted), export and upload it to a PRIVATE repo:
+The public weights are fp16 (inference-only). If you also want the full fp32
+**resume-capable** checkpoint archived (so the local ~1.6 GB copy can later be
+deleted without losing the ability to continue training), upload the original
+checkpoint itself, which still carries optimizer and generator state, to a
+PRIVATE repo:
 
 ```powershell
-python .\experiments\tiny_language_lab\export_model_only_checkpoint.py `
-  --checkpoint C:\cassandra_runs\stage61_pure_broad_200m_checkpoints\stage61_pure_broad_200m_seed7_random_full_seed7.pt `
-  --out C:\cassandra_runs\stage61_release_fp32\stage61_pure_broad_200m_text8_fp32.pt --dtype fp32
 huggingface-cli repo create cassandra-200m-text8-archive --type model --private
-huggingface-cli upload <username>/cassandra-200m-text8-archive C:\cassandra_runs\stage61_release_fp32 . --repo-type model
+huggingface-cli upload <username>/cassandra-200m-text8-archive `
+  C:\cassandra_runs\stage61_pure_broad_200m_checkpoints\stage61_pure_broad_200m_seed7_random_full_seed7.pt `
+  stage61_pure_broad_200m_seed7_fp32_resume.pt --repo-type model
 ```
 
+Its SHA-256 is `4e5c0c0540b7b019f7fb6a53636a8963cffae145e6182e2e41aa463b2f8bacd5`.
 Verify the upload (checksums) BEFORE deleting any local checkpoint.
 
-## Two informed choices for you
+## One choice for you
 
-- **Weights format.** The package ships a PyTorch `.pt` (pickle). It loads with
-  the shipped code and is fully functional, but Hugging Face flags pickle files
-  and prefers `safetensors`. If you want the cleaner, warning-free format, say
-  so and I will add a `safetensors` weights file plus a tiny loader before you
-  upload. The `.pt` is publishable as-is.
 - **Repo name.** `cassandra-200m-text8` is a suggestion; rename freely. The
   model card links back to the GitHub code repo, so keep that link accurate if
   you fork or move it.
+
+Weights ship as `safetensors` (no pickle), so Hugging Face loads them without a
+security warning and the file cannot execute code on load.
 
 Nothing here is irreversible until step 6. I do not run the upload; that is your
 button to press.

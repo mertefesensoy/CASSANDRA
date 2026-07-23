@@ -8,6 +8,7 @@ import resolves (same convention as cassandra_compare.py).
 from __future__ import annotations
 
 import gc
+import json
 import unicodedata
 from pathlib import Path
 
@@ -103,6 +104,48 @@ def load_model(
     del ckpt, state
     gc.collect()
     return model, codec, args, meta
+
+
+def load_model_from_safetensors(
+    weights_path: Path | str,
+    config_path: Path | str,
+    codec_path: Path | str,
+    device: str = "cuda",
+) -> tuple[TinyTransformer, Codec, dict, dict]:
+    """Load a released Cassandra model from safetensors + config.json + codec.json.
+
+    This is the pickle-free load path for published model packages. The
+    architecture comes from config.json, the alphabet from codec.json, and the
+    weights from a safetensors file. Returns (model, codec, config, meta) with
+    the same shape as load_model. Weights stored fp16 are cast to the model's
+    fp32 parameters on load, matching the load_model behaviour.
+    """
+    from safetensors.torch import load_file
+
+    config = json.loads(Path(config_path).read_text(encoding="utf-8"))
+    chars = json.loads(Path(codec_path).read_text(encoding="utf-8"))["chars"]
+    if not isinstance(chars, list) or not chars:
+        raise ValueError(f"codec.json has no usable chars vocab: {codec_path}")
+    model = TinyTransformer(
+        vocab_size=len(chars),
+        block_size=int(config["block_size"]),
+        n_layer=int(config["n_layer"]),
+        n_head=int(config["n_head"]),
+        n_embd=int(config["n_embd"]),
+        dropout=float(config.get("dropout") or 0.0),
+        adapter_rank=int(config.get("adapter_rank") or 0),
+        lora_rank=int(config.get("lora_rank") or 0),
+        lora_alpha=float(config.get("lora_alpha") or 1.0),
+        lora_dropout=float(config.get("lora_dropout") or 0.0),
+        pos_encoding=str(config.get("pos_encoding") or "rope"),
+        activation_checkpoint=False,
+    )
+    state = load_file(str(weights_path), device="cpu")
+    model.load_state_dict(state)
+    model.to(device).eval()
+    codec = build_codec(chars)
+    meta = {"parameters": sum(p.numel() for p in model.parameters())}
+    return model, codec, config, meta
 
 
 def encode_fast(text: str, codec: Codec) -> torch.Tensor:

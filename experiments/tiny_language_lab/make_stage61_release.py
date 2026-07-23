@@ -25,12 +25,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import torch
+from safetensors.torch import save_file
 
-from export_model_only_checkpoint import export_model_only, sha256_file
-from flagship_eval_lib import free_model, load_model, sample_text
+from export_model_only_checkpoint import convert_state_dict, sha256_file
+from flagship_eval_lib import free_model, load_model_from_safetensors, sample_text
 
 EXPECTED_PARAMETERS = 201_609_249
-WEIGHTS_NAME = "stage61_pure_broad_200m_text8_fp16.pt"
+WEIGHTS_NAME = "stage61_pure_broad_200m_text8_fp16.safetensors"
 
 # The user's decisions, recorded 2026-07-23.
 WEIGHTS_LICENSE = "Apache-2.0"
@@ -61,20 +62,41 @@ def main() -> None:
 
     source_sha = sha256_file(args.checkpoint)
 
-    # Architecture and vocab from the source checkpoint.
+    # Architecture, vocab, and weights from the source checkpoint.
     ckpt = torch.load(args.checkpoint, map_location="cpu", weights_only=False, mmap=True)
     ck_args = ckpt.get("args") or {}
     chars = ckpt.get("chars")
     if not isinstance(chars, list) or not chars:
         raise ValueError("Checkpoint has no usable chars vocab")
     step = ckpt.get("step")
-    del ckpt
+    state = ckpt.get("model_state") if "model_state" in ckpt else ckpt.get("model")
+    if state is None:
+        raise ValueError("Checkpoint has no model state")
 
-    # fp16 model-only weights via the audited export path.
+    # fp16, pickle-free safetensors weights. No weight tying in TinyTransformer
+    # (token_embedding and lm_head are independent), so a contiguous clone is
+    # enough to satisfy safetensors' no-shared-memory rule.
+    fp16_state = {
+        key: value.contiguous().clone()
+        for key, value in convert_state_dict(state, torch.float16).items()
+    }
+    del ckpt, state
     weights_path = args.out_dir / WEIGHTS_NAME
-    report = export_model_only(args.checkpoint, weights_path, "fp16")
-    if int(report["step"]) != int(step):
-        raise ValueError("Exported step does not match source checkpoint step")
+    save_file(
+        fp16_state,
+        str(weights_path),
+        metadata={
+            "format": "pt",
+            "model": "cassandra-200m-text8",
+            "dtype": "fp16",
+            "license": WEIGHTS_LICENSE,
+        },
+    )
+    del fp16_state
+    weights_sha = sha256_file(weights_path)
+    (weights_path.with_suffix(weights_path.suffix + ".sha256")).write_text(
+        f"{weights_sha}  {weights_path.name}\n", encoding="utf-8"
+    )
 
     # config.json (architecture, training provenance, recommended inference).
     config = {
@@ -89,8 +111,9 @@ def main() -> None:
         "pos_encoding": str(ck_args.get("pos_encoding") or "rope"),
         "dropout": float(ck_args.get("dropout") or 0.0),
         "weights_dtype": "fp16",
+        "weights_format": "safetensors",
         "weights_file": WEIGHTS_NAME,
-        "weights_sha256": report["sha256"],
+        "weights_sha256": weights_sha,
         "source_checkpoint_sha256_fp32": source_sha,
         "training": {
             "optimizer": "muon (hidden) + adamw (embeddings, head)",
@@ -111,13 +134,17 @@ def main() -> None:
     )
 
     # codec.json: the 33-char alphabet in checkpoint order (index == token id).
-    (args.out_dir / "codec.json").write_text(
+    codec_path = args.out_dir / "codec.json"
+    codec_path.write_text(
         json.dumps({"chars": chars, "vocab_size": len(chars)}, indent=2) + "\n",
         encoding="utf-8",
     )
 
-    # Round-trip: the exported fp16 weights must load and generate.
-    model, codec, _, meta = load_model(weights_path, device=args.device)
+    # Round-trip: the safetensors weights must load pickle-free and generate.
+    config_path = args.out_dir / "config.json"
+    model, codec, _, meta = load_model_from_safetensors(
+        weights_path, config_path, codec_path, device=args.device
+    )
     try:
         if int(meta["parameters"]) != EXPECTED_PARAMETERS:
             raise ValueError("Round-trip parameter count mismatch")
@@ -137,12 +164,14 @@ def main() -> None:
         "source_checkpoint": str(args.checkpoint),
         "source_checkpoint_sha256_fp32": source_sha,
         "weights_file": WEIGHTS_NAME,
-        "weights_sha256_fp16": report["sha256"],
-        "weights_bytes_fp16": report["bytes"],
+        "weights_format": "safetensors",
+        "weights_sha256_fp16": weights_sha,
+        "weights_bytes_fp16": weights_path.stat().st_size,
         "parameters": EXPECTED_PARAMETERS,
         "step": int(step),
         "weights_license": WEIGHTS_LICENSE,
         "roundtrip_ok": True,
+        "roundtrip_loader": "load_model_from_safetensors (pickle-free)",
         "roundtrip_sample_prefix": sample[:160],
         "files": ["config.json", "codec.json", WEIGHTS_NAME, f"{WEIGHTS_NAME}.sha256"],
     }

@@ -39,18 +39,20 @@ claim of broad or reliable English competence.
 ## How to run
 
 Requires the Cassandra repo code (Apache-2.0) for the model class and the
-downloaded weights file:
+downloaded package (safetensors weights plus `config.json` and `codec.json`):
 
 ```bash
 git clone https://github.com/mertefesensoy/CASSANDRA
-# put stage61_pure_broad_200m_text8_fp16.pt beside the code, then:
+pip install torch numpy safetensors
+# put the .safetensors, config.json, and codec.json beside the code, then:
 ```
 
 ```python
-from flagship_eval_lib import load_model, sample_text
+from flagship_eval_lib import load_model_from_safetensors, sample_text
 
-model, codec, args, meta = load_model(
-    "stage61_pure_broad_200m_text8_fp16.pt", device="cuda"  # or "cpu"
+model, codec, config, meta = load_model_from_safetensors(
+    "stage61_pure_broad_200m_text8_fp16.safetensors",
+    "config.json", "codec.json", device="cuda",  # or "cpu"
 )
 print(sample_text(
     model, codec,
@@ -61,6 +63,9 @@ print(sample_text(
     seed=7, device="cuda",
 ))
 ```
+
+Weights are shipped as `safetensors` (no pickle), so the file loads without
+executing any code.
 
 **Recommended inference: temperature 0.8 with top-p 0.9.** Nucleus truncation
 removes a low-probability tail that otherwise emits rare garbage tokens. It does
